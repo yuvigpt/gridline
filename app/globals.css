@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: var(--font-geist-sans), 'Geist', sans-serif;
+  --font-mono: var(--font-geist-mono), 'Geist Mono', monospace;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Dark emerald theme — the site is a single dark experience */
+:root {
+  color-scheme: dark;
+  --background: #040c08;
+  --foreground: #ecfdf5;
+  --card: rgba(255, 255, 255, 0.04);
+  --card-foreground: #ecfdf5;
+  --popover: #071410;
+  --popover-foreground: #ecfdf5;
+  --primary: #34d399;
+  --primary-foreground: #04120c;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #ecfdf5;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #9db8ab;
+  --accent: #0d9488;
+  --accent-foreground: #ecfdf5;
+  --destructive: #f87171;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(52, 211, 153, 0.5);
+  --radius: 0.625rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(52, 211, 153, 0.04) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+      0 20px 60px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .glass-strong {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.08) 0%, rgba(9, 22, 16, 0.55) 40%, rgba(9, 22, 16, 0.65) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(26px) saturate(170%);
+    -webkit-backdrop-filter: blur(26px) saturate(170%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+      0 24px 70px -30px rgba(0, 0, 0, 0.7);
+  }
+
+  .glass-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-sheen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.08) 48%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0.08) 52%, transparent 70%);
+    background-size: 250% 250%;
+    animation: glass-sheen-sweep 7s ease-in-out infinite;
+  }
+
+  @keyframes glass-sheen-sweep {
+    0%,
+    55% {
+      background-position: 130% 130%;
+    }
+    100% {
+      background-position: -60% -60%;
+    }
+  }
+
+  .glow-border {
+    box-shadow:
+      0 0 0 1px rgba(52, 211, 153, 0.15),
+      0 30px 80px -40px rgba(52, 211, 153, 0.4);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #34d399 0%, #5eead4 60%, #0d9488 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-shimmer {
+    background: linear-gradient(110deg, #34d399 0%, #5eead4 25%, #ecfdf5 50%, #5eead4 75%, #0d9488 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shimmer-slide 5s ease-in-out infinite;
+  }
+
+  @keyframes text-shimmer-slide {
+    0%,
+    100% {
+      background-position: 110% 0%;
+    }
+    50% {
+      background-position: -10% 0%;
+    }
+  }
+
+  .noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  }
+}

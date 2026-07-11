@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DSA Roadmap — Gridline</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1/dist/lenis.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      /* UNIFIED HIGH-CONTRAST PALETTE: Infused with energetic emerald vectors */
+      --accent: #10b981;
+      --accent-bright: #34d399;
+      --accent-dim: rgba(52, 211, 153, 0.12);
+      --accent-glow: rgba(52, 211, 153, 0.35);
+      --bg: #030712; /* Deepened dark state layer for rich black contrast */
+      --glass-bg: rgba(255, 255, 255, 0.015);
+      --glass-border: rgba(52, 211, 153, 0.08); /* Infused borders with emerald hints */
+      --text-dim: #94a3b8; /* Swapped muddy slate for crisp slate-zinc */
+      --radius: 24px;
+      --easy: #34d399;
+      --medium: #fbbf24;
+      --hard: #f87171;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #f8fafc;
+      background-color: var(--bg);
+      overflow-x: clip;
+      min-height: 100vh;
+    }
+
+    /* PREMIUM LAYER: Real-time procedural neon cosmic space aura background */
+    .bg-mesh {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 70%, rgba(5, 150, 105, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(4, 120, 87, 0.04) 0%, transparent 60%);
+      z-index: -2;
+      filter: blur(40px);
+      will-change: transform;
+      animation: spaceDrift 24s infinite ease-in-out alternate;
+    }
+     /* Aurora Background */
+    .bg-mesh {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('/bkg5gpt.png');
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    @keyframes spaceDrift {
+      0% { transform: scale(1) translate(0px, 0px); }
+      100% { transform: scale(1.1) translate(15px, -10px); }
+    }
+
+    .bg-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(3,7,18,0.3) 0%, #030712 100%);
+      z-index: -1;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), 0 0 24px -2px rgba(16, 185, 129, 0.03);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.3), transparent);
+    }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      text-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
+    }
+
+    .day-card {
+      background: rgba(255, 255, 255, 0.015);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+
+    .day-card:hover {
+      background: rgba(52, 211, 153, 0.02);
+      border-color: rgba(52, 211, 153, 0.2);
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4), 0 0 16px -4px rgba(52, 211, 153, 0.1);
+    }
+    
+    .day-card.complete {
+      border-color: var(--accent-bright);
+      box-shadow: 0 4px 24px -4px rgba(52, 211, 153, 0.2);
+      background: rgba(16, 185, 129, 0.03);
+    }
+
+    .mini-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+    .mini-dot.on {
+      background: var(--accent-bright);
+      box-shadow: 0 0 8px 2px var(--accent-glow);
+    }
+
+    .prob-box {
+      width: 15px; height: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .prob-done .prob-box {
+      background: var(--accent-bright);
+      border-color: var(--accent-bright);
+      box-shadow: 0 0 10px 2px var(--accent-glow);
+    }
+    .prob-done .prob-box::after {
+      content: '✓';
+      font-size: 10px;
+      color: #030712;
+      font-weight: 900;
+    }
+
+    .diff-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .diff-badge.E { color: var(--easy); background: rgba(52, 211, 153, 0.12); text-shadow: 0 0 8px rgba(52, 211, 153, 0.1); }
+    .diff-badge.M { color: var(--medium); background: rgba(251, 191, 36, 0.12); text-shadow: 0 0 8px rgba(251, 191, 36, 0.1); }
+    .diff-badge.H { color: var(--hard); background: rgba(248, 113, 113, 0.12); text-shadow: 0 0 8px rgba(248, 113, 113, 0.1); }
+
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 6px 14px;
+      border-radius: 100px;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .check-pill.checked {
+      color: #fff;
+      border-color: var(--accent-bright);
+      background: rgba(52, 211, 153, 0.08);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.1);
+    }
+    .check-pill .box {
+      width: 12px; height: 12px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .check-pill.checked .box::after {
+      content: '✓'; font-size: 9px; color: #000; font-weight: 900;
+    }
+
+    .floating-nav {
+      position: sticky;
+      top: 24px;
+      z-index: 100;
+      margin: 0 auto 40px;
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      border-radius: 100px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .nav-item {
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .nav-item:hover {
+      color: var(--accent-bright);
+      background: rgba(52, 211, 153, 0.08);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* Skeleton Loading Infrastructure */
+    .skeleton-loading .reveal-panel,
+    .skeleton-loading #dayList {
+      pointer-events: none;
+    }
+    .skeleton-loading .stat-value,
+    .skeleton-loading #problemsStat,
+    .skeleton-loading #pctStat,
+    .skeleton-loading #streakStat {
+      background: rgba(255, 255, 255, 0.06);
+      color: transparent !important;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      min-width: 60px;
+    }
+    .skeleton-loading .stat-value::after,
+    .skeleton-loading #problemsStat::after,
+    .skeleton-loading #pctStat::after,
+    .skeleton-loading #streakStat::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation: pulseSkeleton 1.4s infinite linear;
+    }
+    @keyframes pulseSkeleton { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+    /* Layout expansion height constraints */
+    .day-body-wrapper {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .day-body-wrapper.expanded {
+      grid-template-rows: 1fr;
+    }
+    .day-body-inner {
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="skeleton-loading">
+
+<div class="bg-mesh"></div>
+<div class="bg-overlay"></div>
+
+<div class="max-w-[900px] mx-auto px-6 py-12 relative z-10 opacity-0" id="dsaContentWrap">
+  
+  <nav class="floating-nav" id="mainNav">
+    <a href="tracker.html" class="nav-item">
+      <i class="ti ti-arrow-left"></i> BACK TO DASHBOARD
+    </a>
+    <div class="flex items-center px-4 gap-3 border-l border-white/10 ml-2">
+      <span class="font-bold text-sm tracking-tight text-[var(--accent-bright)]" id="profileIndicator">DSA ROADMAP</span>
+    </div>
+  </nav>
+
+  <div class="glass-card p-8 mb-8 reveal-panel">
+    <div class="flex flex-col md:flex-row md:items-baseline justify-between gap-4 mb-6">
+      <div class="text-3xl stat-value" id="daysStat">...<span> / 120 days complete</span></div>
+      <div class="flex gap-6 flex-wrap text-sm text-slate-400">
+        <div><span class="font-bold font-mono text-white" id="problemsStat">...</span> problems solved</div>
+        <div><span class="font-bold font-mono text-white" id="pctStat">...%</span> overall</div>
+        <div><span class="font-bold font-mono text-white" id="streakStat">...</span> day streak</div>
+      </div>
+    </div>
+    <div class="w-full h-2.5 bg-white/5 rounded-full overflow-hidden">
+      <div class="h-full bg-[var(--accent-bright)] rounded-full" id="progressFill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="space-y-4" id="dayList"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, setDoc ,getDoc} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// --- SECURITY LAYER AUTHENTICATION GUARD ---
+const currentUserId = localStorage.getItem("habit_current_user");
+if (!currentUserId) {
+  window.location.href = "/";
+}
+
+// Safely normalize identity tokens to block code engine execution failures
+const normalizedId = currentUserId ? currentUserId.trim().toLowerCase() : "";
+let currentUserProfile = { username: "Achiever" };
+
+function updateHeaderName(name) {
+  document.getElementById('profileIndicator').textContent = `${name.toUpperCase()} × DSA ROADMAP`;
+}
+updateHeaderName(currentUserProfile.username);
+
+  const lenis = new Lenis({ autoRaf: true });
+  gsap.registerPlugin(ScrollTrigger);
+
+  let isAppLoaded = false;
+  let state = {};
+  let openDayId = null;
+  
+  // Cache rendered DOM elements to prevent layout thrashing
+  const dayElementsMap = {}; 
+
+  const animateEntrance = () => {
+    gsap.to("#dsaContentWrap", { opacity: 1, duration: 0.2 });
+    gsap.to("#mainNav", { opacity: 1, y: 0, duration: 0.8, ease: "power4.out" });
+    gsap.from(".reveal-panel", { opacity: 0, y: 30, filter: "blur(8px)", duration: 0.8, ease: "power3.out" });
+    
+    // Smooth scroll reveal entry for the roadmap timeline cards
+    document.querySelectorAll('.day-card-item').forEach(card => {
+      gsap.fromTo(card, 
+        { opacity: 0, y: 30, rotateX: -8, transformPerspective: 1000 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          rotateX: 0, 
+          duration: 0.5, 
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 92%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    });
+  };
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPzwIgNdFVgzxbmBBzl7a1uWCEUGrcR1A",
+    authDomain: "tracker-370f1.firebaseapp.com",
+    projectId: "tracker-370f1",
+    storageBucket: "tracker-370f1.firebasestorage.app",
+    messagingSenderId: "188560245686",
+    appId: "1:188560245686:web:4efbe3e9a87d77ba427717",
+    measurementId: "G-7VPTSF1YXJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const syncDocRef = doc(db, "gridline_dsa", `user_${normalizedId}`);
+
+  function p(id,name,diff){return {id,name,diff:diff||''};}
+
+  const days=[
+{day:1,title:'Time & Space Complexity',theory:['Big O, Big Omega, Big Theta','Best, Average, Worst Case','Time Complexity of loops','Space Complexity'],problems:[p('1_1','Contains Duplicate','E'),p('1_2','Maximum Subarray','M'),p('1_3','Find Numbers with Even Number of Digits','E')],revision:'Analyze the time complexity of all three problems.'},
+{day:2,title:'Arrays Basics',theory:['Array Operations','Traversal','Insertion & Deletion','Static vs Dynamic Arrays'],problems:[p('2_1','Two Sum','E'),p('2_2','Remove Duplicates from Sorted Array','E'),p('2_3','Best Time to Buy and Sell Stock','E')],revision:'Revise Day 1.'},
+{day:3,title:'Prefix Sum',theory:['Prefix Sum','Running Sum','Range Queries'],problems:[p('3_1','Running Sum of 1D Array','E'),p('3_2','Find Pivot Index','E'),p('3_3','Range Sum Query – Immutable','E')],revision:'Solve one additional Prefix Sum problem.'},
+{day:4,title:'Two Pointers',theory:['Opposite Direction','Same Direction','Fast & Slow Pointer'],problems:[p('4_1','Valid Palindrome','E'),p('4_2','Move Zeroes','E'),p('4_3','Container With Most Water','M')],revision:'Revise Prefix Sum.'},
+{day:5,title:'Sliding Window',theory:['Fixed Window','Variable Window'],problems:[p('5_1','Maximum Average Subarray I','E'),p('5_2','Longest Substring Without Repeating Characters','M'),p('5_3','Minimum Size Subarray Sum','M')],revision:'Compare Sliding Window vs Brute Force.'},
+{day:6,title:'Sorting',theory:['Bubble Sort','Selection Sort','Insertion Sort','Merge Sort','Quick Sort'],problems:[p('6_1','Sort Colors','M'),p('6_2','Merge Intervals','M'),p('6_3','Largest Number','M')],revision:'Learn sorting complexities.'},
+{day:7,title:'Revision + Practice',theory:[],problems:[p('7_1','Squares of a Sorted Array',''),p('7_2','Majority Element',''),p('7_3','Rotate Array','')],revision:'Revise Days 1–6.'},
+{day:8,title:'Binary Search Basics',theory:['Binary Search','Search Space','Lower Bound','Upper Bound'],problems:[p('8_1','Binary Search','E'),p('8_2','Search Insert Position','E'),p('8_3','Guess Number Higher or Lower','E')],revision:'Practice binary search template.'},
+{day:9,title:'Advanced Binary Search',theory:['Binary Search on Answers','Rotated Arrays'],problems:[p('9_1','First Bad Version','E'),p('9_2','Search in Rotated Sorted Array','M'),p('9_3','Find Peak Element','M')],revision:'Solve one extra binary search problem.'},
+{day:10,title:'Strings',theory:['String Operations','Character Arrays','StringBuilder Concept'],problems:[p('10_1','Valid Anagram','E'),p('10_2','Longest Common Prefix','E'),p('10_3','Reverse Words in a String','M')],revision:'Revise Binary Search.'},
+{day:11,title:'HashMap',theory:['Hashing','Collision','Frequency Count'],problems:[p('11_1','Happy Number','E'),p('11_2','Isomorphic Strings','E'),p('11_3','Group Anagrams','M')],revision:'Practice frequency counting.'},
+{day:12,title:'HashSet',theory:['Set Operations','Duplicate Detection'],problems:[p('12_1','Intersection of Two Arrays','E'),p('12_2','Longest Consecutive Sequence','M'),p('12_3','Contains Duplicate II','E')],revision:'Compare Map vs Set.'},
+{day:13,title:'Bit Manipulation',theory:['XOR','AND','OR','Left Shift','Right Shift'],problems:[p('13_1','Single Number','E'),p('13_2','Number of 1 Bits','E'),p('13_3','Reverse Bits','E')],revision:'Practice bitwise operators.'},
+{day:14,title:'Math',theory:['Prime Numbers','GCD','LCM','Modular Arithmetic'],problems:[p('14_1','Plus One','E'),p('14_2','Pow(x, n)','M'),p('14_3','Happy Number','E')],revision:'Revise Bit Manipulation.'},
+{day:15,title:'Weekly Revision',theory:[],problems:[p('15_1','Missing Number',''),p('15_2','Product of Array Except Self',''),p('15_3','Top K Frequent Elements','')],revision:'Revise everything from Days 8–14.'},
+{day:16,title:'Linked List Basics',theory:['Node Structure','Traversal','Insertion','Deletion'],problems:[p('16_1','Reverse Linked List','E'),p('16_2','Middle of Linked List','E'),p('16_3','Linked List Cycle','E')],revision:'Draw linked list operations on paper.'},
+{day:17,title:'Advanced Linked List',theory:['Fast & Slow Pointer','Dummy Node'],problems:[p('17_1','Remove Nth Node From End','M'),p('17_2','Merge Two Sorted Lists','E'),p('17_3','Palindrome Linked List','E')],revision:'Reverse Linked List without notes.'},
+{day:18,title:'More Linked Lists',theory:['Random Pointer','Circular List'],problems:[p('18_1','Add Two Numbers','M'),p('18_2','Copy List with Random Pointer','M'),p('18_3','Intersection of Two Linked Lists','E')],revision:'Revise Linked Lists.'},
+{day:19,title:'Stack',theory:['Stack Operations','Applications'],problems:[p('19_1','Valid Parentheses','E'),p('19_2','Min Stack','M'),p('19_3','Baseball Game','E')],revision:'Implement stack manually.'},
+{day:20,title:'Monotonic Stack',theory:['Increasing Stack','Decreasing Stack'],problems:[p('20_1','Daily Temperatures','M'),p('20_2','Next Greater Element I','E'),p('20_3','Largest Rectangle in Histogram','H')],revision:'Next Greater Element Patterns.'},
+{day:21,title:'Queue',theory:['Queue','Circular Queue','Deque'],problems:[p('21_1','Implement Queue using Stacks','E'),p('21_2','Number of Recent Calls','E'),p('21_3','Design Circular Queue','M')],revision:'Compare Queue vs Stack.'},
+{day:22,title:'Priority Queue & Heap',theory:['Min Heap','Max Heap'],problems:[p('22_1','Kth Largest Element in a Stream','E'),p('22_2','Last Stone Weight','E'),p('22_3','Top K Frequent Elements','M')],rich_text:'',revision:'Implement heap operations.'},
+{day:23,title:'Recursion',theory:['Recursive Calls','Base Case','Call Stack'],problems:[p('23_1','Fibonacci Number',''),p('23_2','Climbing Stairs',''),p('23_3','Pow(x, n)','')],revision:'Draw recursion tree.'},
+{day:24,title:'Backtracking',theory:['Decision Tree','Choose → Explore → Undo'],problems:[p('24_1','Subsets','M'),p('24_2','Permutations','M'),p('24_3','Letter Combinations of a Phone Number','M')],revision:'Dry-run recursion branches.'},
+{day:25,title:'More Backtracking',theory:['Constraint Satisfaction'],problems:[p('25_1','Combination Sum','M'),p('25_2','Word Search','M'),p('25_3','Generate Parentheses','M')],revision:'Revise recursion patterns.'},
+{day:26,title:'Binary Trees',theory:['Tree Terminology','DFS','BFS'],problems:[p('26_1','Maximum Depth of Binary Tree','E'),p('26_2','Same Tree','E'),p('26_3','Invert Binary Tree','E')],revision:'Practice tree traversals.'},
+{day:27,title:'Tree Traversals',theory:['Inorder','Preorder','Postorder','Level Order'],problems:[p('27_1','Binary Tree Level Order Traversal','M'),p('27_2','Diameter of Binary Tree','E'),p('27_3','Balanced Binary Tree','E')],revision:'Draw traversal outputs.'},
+{day:28,title:'Binary Search Tree',theory:['BST Properties'],problems:[p('28_1','Search in BST','E'),p('28_2','Validate BST','M'),p('28_3','Lowest Common Ancestor of BST','M')],revision:'Compare BST vs Binary Tree.'},
+{day:29,title:'Mixed Revision',theory:[],problems:[p('29_1','Merge Intervals',''),p('29_2','Product of Array Except Self',''),p('29_3','Daily Temperatures',''),p('29_4','Reverse Linked List',''),p('29_5','Binary Search',''),p('29_6','Group Anagrams','')],revision:'Review weak topics.'},
+{day:30,title:'Mock Interview Day',theory:[],problems:[p('30_1','Two Sum',''),p('30_2','Valid Parentheses',''),p('30_3','Binary Search',''),p('30_4','Reverse Linked List',''),p('30_5','Longest Substring Without Repeating Characters',''),p('30_6','Search in Rotated Sorted Array',''),p('30_7','Group Anagrams',''),p('30_8','Daily Temperatures',''),p('30_9','Maximum Depth of Binary Tree',''),p('30_10','Top K Frequent Elements','')],revision:'Attempt 8–10 LeetCode problems blindly.'},
+{day:31,title:'Binary Tree Traversals',theory:['Recursive Traversals','Iterative Traversals','Morris Traversal'],problems:[p('31_1','Binary Tree Inorder Traversal','E'),p('31_2','Binary Tree Preorder Traversal','E'),p('31_3','Binary Tree Postorder Traversal','E')],revision:'Revise all traversal techniques.'},
+{day:32,title:'Tree Views',theory:['Left View','Right View','Top View','Bottom View'],problems:[p('32_1','Binary Tree Right Side View','M'),p('32_2','Vertical Order Traversal','H'),p('32_3','Average of Levels in Binary Tree','E')],revision:'Revise Level Order Traversal.'},
+{day:33,title:'Lowest Common Ancestor',theory:['LCA in Binary Tree','LCA in BST'],problems:[p('33_1','Lowest Common Ancestor of Binary Tree','M'),p('33_2','Lowest Common Ancestor of BST','M'),p('33_3','Path Sum','E')],revision:'Draw recursion tree for LCA.'},
+{day:34,title:'Tree Construction',theory:['Construct Tree using Traversals'],problems:[p('34_1','Construct Binary Tree from Preorder and Inorder Traversal','M'),p('34_2','Construct Binary Tree from Inorder and Postorder Traversal','M')],revision:'Revise Traversals.'},
+{day:35,title:'Advanced Tree Problems',theory:['Diameter','Maximum Path Sum'],problems:[p('35_1','Diameter of Binary Tree','E'),p('35_2','Binary Tree Maximum Path Sum','H'),p('35_3','Count Good Nodes in Binary Tree','M')],revision:'Revise DFS.'},
+{day:36,title:'Binary Search Tree',theory:['BST Operations','Successor & Predecessor'],problems:[p('36_1','Insert into BST','M'),p('36_2','Delete Node in BST','M'),p('36_3','Kth Smallest Element in BST','M')],revision:'Revise BST Properties.'},
+{day:37,title:'Heap Basics',theory:['Heap Structure','Heapify','Priority Queue'],problems:[p('37_1','Kth Largest Element in Array','M'),p('37_2','Last Stone Weight','E'),p('37_3','Find K Closest Elements','M')],revision:'Implement Min Heap.'},
+{day:38,title:'Advanced Heap',theory:['Heap Applications'],problems:[p('38_1','Merge K Sorted Lists','H'),p('38_2','Top K Frequent Words','M'),p('38_3','Find Median from Data Stream','H')],revision:'Compare Heap vs Sorting.'},
+{day:39,title:'Greedy Basics',theory:['Greedy Strategy','Local vs Global Optimum'],problems:[p('39_1','Assign Cookies','E'),p('39_2','Lemonade Change','E'),p('39_3','Jump Game','M')],revision:'Learn Greedy Pattern.'},
+{day:40,title:'Greedy Advanced',theory:['Interval Scheduling','Activity Selection'],problems:[p('40_1','Non-overlapping Intervals','M'),p('40_2','Meeting Rooms','M'),p('40_3','Gas Station','M')],revision:'Revise Interval Problems.'},
+{day:41,title:'Graph Basics',theory:['Graph Representation','Adjacency List','Matrix'],problems:[p('41_1','Find if Path Exists in Graph','E'),p('41_2','Number of Provinces','M'),p('41_3','Find Center of Star Graph','E')],revision:'Build Graph manually.'},
+{day:42,title:'BFS',theory:['Breadth First Search'],problems:[p('42_1','Binary Tree Level Order Traversal',''),p('42_2','Rotting Oranges','M'),p('42_3','01 Matrix','M')],revision:'Revise Queue.'},
+{day:43,title:'DFS',theory:['Recursive DFS','Iterative DFS'],problems:[p('43_1','Number of Islands','M'),p('43_2','Flood Fill','E'),p('43_3','Max Area of Island','M')],revision:'Compare BFS vs DFS.'},
+{day:44,title:'Graph Traversal',theory:['Connected Components','Traversal Techniques'],problems:[p('44_1','Clone Graph','M'),p('44_2','Keys and Rooms','M'),p('44_3','Surrounded Regions','M')],revision:'Practice DFS Templates.'},
+{day:45,title:'Topological Sort',theory:["Kahn's Algorithm",'DFS Topological Sort'],problems:[p('45_1','Course Schedule','M'),p('45_2','Course Schedule II','M'),p('45_3','Alien Dictionary','H')],revision:'Revise DAG Concepts.'},
+{day:46,title:'Union Find (DSU)',theory:['Disjoint Set Union','Path Compression','Union by Rank'],problems:[p('46_1','Redundant Connection','M'),p('46_2','Number of Connected Components','M'),p('46_3','Accounts Merge','M')],revision:'Implement DSU from Scratch.'},
+{day:47,title:'Shortest Path',theory:["Dijkstra's Algorithm"],problems:[p('47_1','Network Delay Time','M'),p('47_2','Path with Minimum Effort','M'),p('47_3','Cheapest Flights Within K Stops','M')],revision:'Revise Priority Queue.'},
+{day:48,title:'Minimum Spanning Tree',theory:["Prim's Algorithm","Kruskal's Algorithm"],problems:[p('48_1','Min Cost to Connect All Points','M'),p('48_2','Connecting Cities With Minimum Cost','M')],revision:'Revise DSU.'},
+{day:49,title:'Graph Revision',theory:[],problems:[p('49_1','Number of Islands',''),p('49_2','Course Schedule',''),p('49_3','Clone Graph',''),p('49_4','Network Delay Time','')],revision:'Review BFS, DFS, DSU.'},
+{day:50,title:'Mock Contest',theory:[],problems:[p('50_1','5 Random Graph Problems',''),p('50_2','2 Tree Problems',''),p('50_3','2 Heap Problems','')],revision:'Goal: Finish within 3 hours.'},
+{day:51,title:'Dynamic Programming Basics',theory:['What is DP?','Memoization','Tabulation'],problems:[p('51_1','Climbing Stairs','E'),p('51_2','Min Cost Climbing Stairs','E'),p('51_3','Fibonacci Number','E')],revision:'Convert recursion to DP.'},
+{day:52,title:'1D DP',theory:['State Definition','Transition'],problems:[p('52_1','House Robber','M'),p('52_2','House Robber II','M'),p('52_3','Delete and Earn','M')],revision:'Draw DP tables.'},
+{day:53,title:'Coin Change',theory:['Unbounded Knapsack'],problems:[p('53_1','Coin Change','M'),p('53_2','Coin Change II','M'),p('53_3','Perfect Squares','M')],revision:'Revise Tabulation.'},
+{day:54,title:'Longest Increasing Subsequence',theory:['LIS','Binary Search Optimization'],problems:[p('54_1','Longest Increasing Subsequence','M'),p('54_2','Russian Doll Envelopes','H')],revision:'Compare O(n²) vs O(n log n).'},
+{day:55,title:'Longest Common Subsequence',theory:['String DP'],problems:[p('55_1','Longest Common Subsequence','M'),p('55_2','Delete Operation for Two Strings','M')],revision:'Build DP table manually.'},
+{day:56,title:'Knapsack',theory:['0/1 Knapsack','Choice Diagram'],problems:[p('56_1','Partition Equal Subset Sum','M'),p('56_2','Target Sum','M')],revision:'Practice Recursion + Memoization.'},
+{day:57,title:'Grid DP',theory:['Grid Traversal'],problems:[p('57_1','Unique Paths','M'),p('57_2','Minimum Path Sum','M'),p('57_3','Triangle','M')],revision:'Revise State Transition.'},
+{day:58,title:'String DP',theory:['Edit Distance'],problems:[p('58_1','Edit Distance','H'),p('58_2','Decode Ways','M')],revision:'Practice DP table creation.'},
+{day:59,title:'DP Revision',theory:[],problems:[p('59_1','House Robber',''),p('59_2','Coin Change',''),p('59_3','LCS',''),p('59_4','LIS',''),p('59_5','Unique Paths','')],revision:'Revise all DP patterns.'},
+{day:60,title:'Mock Interview & Revision',theory:[],problems:[p('60_1','House Robber',''),p('60_2','Coin Change',''),p('60_3','Merge K Sorted Lists',''),p('60_4','Network Delay Time',''),p('60_5','Longest Common Subsequence',''),p('60_6','Course Schedule',''),p('60_7','Binary Tree Maximum Path Sum',''),p('60_8','Number of Islands',''),p('60_9','Kth Smallest in BST',''),p('60_10','Jump Game','')],revision:'Review weak topics.'},
+{day:61,title:'Trie Basics',theory:['Trie Structure','Insert','Search','Prefix Search'],problems:[p('61_1','Implement Trie','M'),p('61_2','Design Add and Search Words Data Structure','M'),p('61_3','Longest Word in Dictionary','M')],revision:'Implement Trie from scratch.'},
+{day:62,title:'Advanced Trie',theory:['Prefix Count','Applications of Trie'],problems:[p('62_1','Word Search II','H'),p('62_2','Replace Words','M'),p('62_3','Map Sum Pairs','M')],revision:'Revise Trie operations.'},
+{day:63,title:'Segment Tree Basics',theory:['Segment Tree Construction','Range Query','Point Update'],problems:[p('63_1','Range Sum Query - Mutable','M'),p('63_2','Count of Smaller Numbers After Self','H')],revision:'Build Segment Tree manually.'},
+{day:64,title:'Fenwick Tree',theory:['Prefix Sum Optimization','Update & Query'],problems:[p('64_1','Range Sum Query - Mutable',''),p('64_2','Count of Smaller Numbers After Self','')],revision:'Compare Fenwick Tree vs Segment Tree.'},
+{day:65,title:'Bit Manipulation Advanced',theory:['XOR Tricks','Bit Masking','Power of Two','Subset Generation'],problems:[p('65_1','Missing Number','E'),p('65_2','Single Number II','M'),p('65_3','Counting Bits','E')],revision:'Practice bitwise operators.'},
+{day:66,title:'Advanced Bit Manipulation',theory:['Bitmask DP (Introduction)'],problems:[p('66_1','Subsets','M'),p('66_2','Gray Code','M'),p('66_3','Maximum XOR of Two Numbers in an Array','M')],revision:'Generate subsets using bitmasking.'},
+{day:67,title:'Greedy Algorithms',theory:['Interval Problems','Greedy Proof'],problems:[p('67_1','Partition Labels','M'),p('67_2','Queue Reconstruction by Height','M'),p('67_3','Minimum Number of Arrows to Burst Balloons','M')],revision:'Revise Jump Game.'},
+{day:68,title:'Greedy Advanced',theory:['Huffman Coding','Scheduling'],problems:[p('68_1','Task Scheduler','M'),p('68_2','Candy','H'),p('68_3','Hand of Straights','M')],revision:'Revise interval scheduling.'},
+{day:69,title:'Graph Algorithms',theory:['Cycle Detection (DFS)','Cycle Detection (BFS)'],problems:[p('69_1','Detect Cycle in Undirected Graph',''),p('69_2','Detect Cycle in Directed Graph',''),p('69_3','Is Graph Bipartite?','M')],revision:'Revise DFS.'},
+{day:70,title:'Graph Shortest Path',theory:['Bellman Ford','Floyd Warshall'],problems:[p('70_1','Find the City With the Smallest Number of Neighbors','M'),p('70_2','Network Delay Time','M')],revision:'Compare Dijkstra vs Bellman Ford.'},
+{day:71,title:'Minimum Spanning Tree',theory:["Prim's Algorithm","Kruskal's Algorithm"],problems:[p('71_1','Min Cost to Connect All Points','M'),p('71_2','Optimize Water Distribution in a Village','H')],revision:'Revise DSU.'},
+{day:72,title:'Topological Sort',theory:["Kahn's Algorithm",'DFS Topological Sort'],problems:[p('72_1','Parallel Courses','M'),p('72_2','Course Schedule II','M')],revision:'Practice Topological Sort.'},
+{day:73,title:'Graph Revision',theory:[],problems:[p('73_1','Number of Islands',''),p('73_2','Clone Graph',''),p('73_3','Course Schedule',''),p('73_4','Redundant Connection','')],revision:'Review Graph Templates.'},
+{day:74,title:'DP on Strings',theory:['String Matching DP'],problems:[p('74_1','Distinct Subsequences','H'),p('74_2','Longest Palindromic Subsequence','M'),p('74_3','Palindromic Substrings','M')],revision:'Revise LCO.'},
+{day:75,title:'DP on Subsequences',theory:['Inclusion/Exclusion DP'],problems:[p('75_1','Partition Equal Subset Sum','M'),p('75_2','Target Sum','M'),p('75_3','Ones and Zeroes','M')],revision:'Practice subset DP.'},
+{day:76,title:'Knapsack Variants',theory:['Unbounded Knapsack','Bounded Knapsack'],problems:[p('76_1','Coin Change II','M'),p('76_2','Combination Sum IV','M'),p('76_3','Perfect Squares','M')],revision:'Draw DP state transitions.'},
+{day:77,title:'DP on Trees',theory:['Tree DP'],problems:[p('77_1','House Robber III','M'),p('77_2','Binary Tree Cameras','H')],revision:'Revise DFS.'},
+{day:78,title:'DP on Grid',theory:['Grid Optimization'],problems:[p('78_1','Cherry Pickup','H'),p('78_2','Dungeon Game','H')],revision:'Practice grid transitions.'},
+{day:79,title:'Interval DP',theory:['Interval Dynamic Programming'],problems:[p('79_1','Burst Balloons','H'),p('79_2','Minimum Cost Tree From Leaf Values','M')],revision:'Revise recursion.'},
+{day:80,title:'DP Revision',theory:[],problems:[p('80_1','Coin Change',''),p('80_2','LCS',''),p('80_3','LIS',''),p('80_4','Burst Balloons',''),p('80_5','House Robber III','')],revision:'Revise all DP patterns.'},
+{day:81,title:'Advanced Binary Search',theory:['Binary Search on Answer'],problems:[p('81_1','Koko Eating Bananas','M'),p('81_2','Capacity To Ship Packages Within D Days','M'),p('81_3','Split Array Largest Sum','H')],revision:'Practice search space problems.'},
+{day:82,title:'Monotonic Stack',theory:['Increasing Stack','Decreasing Stack'],problems:[p('82_1','Sum of Subarray Minimums','M'),p('82_2','Online Stock Span','M'),p('82_3','Daily Temperatures','M')],revision:'Revise stack patterns.'},
+{day:83,title:'Monotonic Queue',theory:['Sliding Window Optimization'],problems:[p('83_1','Sliding Window Maximum','H'),p('83_2','Shortest Subarray with Sum at Least K','H')],revision:'Compare Queue vs Deque.'},
+{day:84,title:'Design Problems',theory:['Object-Oriented Design'],problems:[p('84_1','LRU Cache','M'),p('84_2','LFU Cache','H')],revision:'Implement LRU manually.'},
+{day:85,title:'Advanced Linked List',theory:['Complex Pointer Manipulation'],problems:[p('85_1','Reverse Nodes in k-Group','H'),p('85_2','Flatten Multilevel Doubly Linked List','M')],revision:'Revise dummy nodes.'},
+{day:86,title:'String Algorithms',theory:['KMP Algorithm','Z Algorithm'],problems:[p('86_1','Find the Index of the First Occurrence in a String','E'),p('86_2','Repeated Substring Pattern','E')],revision:'Implement KMP.'},
+{day:87,title:'Advanced String Problems',theory:['Rolling Hash (Introduction)'],problems:[p('87_1','Longest Repeating Character Replacement','M'),p('87_2','Minimum Window Substring','H')],revision:'Revise Sliding Window.'},
+{day:88,title:'Contest Practice',theory:[],problems:[p('88_1','2 Easy',''),p('88_2','2 Medium',''),p('88_3','1 Hard','')],revision:'Time Limit: 90 minutes.'},
+{day:89,title:'Mixed Revision',theory:[],problems:[p('89_1','Trie',''),p('89_2','Segment Tree',''),p('89_3','DP',''),p('89_4','Graph',''),p('89_5','Heap',''),p('89_6','Tree','')],revision:'Review notes from Days 61–88.'},
+{day:90,title:'Mock Interview',theory:[],problems:[p('90_1','Word Search II',''),p('90_2','Burst Balloons',''),p('90_3','LRU Cache',''),p('90_4','Koko Eating Bananas',''),p('90_5','Binary Tree Cameras',''),p('90_6','Task Scheduler',''),p('90_7','Sliding Window Maximum',''),p('90_8','House Robber III',''),p('90_9','Course Schedule II',''),p('90_10','Min Cost to Connect All Points','')],revision:'Finish within 3–4 hours, review mistakes, note weak topics.'},
+{day:91,title:'Advanced Sliding Window',theory:['Variable Window','Fixed Window','Frequency Map'],problems:[p('91_1','Minimum Window Substring','H'),p('91_2','Longest Repeating Character Replacement','M'),p('91_3','Permutation in String','M')],revision:'Revise all Sliding Window templates.'},
+{day:92,title:'Advanced Two Pointers',theory:['Slow & Fast','Opposite Ends','Partitioning'],problems:[p('92_1','Trapping Rain Water','H'),p('92_2','3Sum','M'),p('92_3','4Sum','M')],revision:'Compare Sliding Window vs Two Pointers.'},
+{day:93,title:'Interval Problems',theory:['Merge','Sweep Line','Sorting Intervals'],problems:[p('93_1','Merge Intervals','M'),p('93_2','Insert Interval','M'),p('93_3','Employee Free Time','H')],revision:'Revise Greedy.'},
+{day:94,title:'Matrix Problems',theory:['Matrix Traversal','Spiral','Rotation'],problems:[p('94_1','Spiral Matrix','M'),p('94_2','Rotate Image','M'),p('94_3','Set Matrix Zeroes','M')],revision:'Revise Arrays.'},
+{day:95,title:'Company Pattern (Amazon)',theory:[],problems:[p('95_1','Top K Frequent Elements',''),p('95_2','K Closest Points to Origin',''),p('95_3','Meeting Rooms II',''),p('95_4','Reorder Data in Log Files','')],revision:'Review Heap.'},
+{day:96,title:'Company Pattern (Google)',theory:[],problems:[p('96_1','Word Ladder',''),p('96_2','Alien Dictionary',''),p('96_3','Word Search II',''),p('96_4','Number of Islands','')],revision:'Review Graphs.'},
+{day:97,title:'Company Pattern (Microsoft)',theory:[],problems:[p('97_1','LRU Cache',''),p('97_2','Design Twitter',''),p('97_3','Serialize and Deserialize Binary Tree',''),p('97_4','Spiral Matrix','')],revision:'Review Design Problems.'},
+{day:98,title:'Company Pattern (Meta)',theory:[],problems:[p('98_1','Clone Graph',''),p('98_2','Binary Tree Right Side View',''),p('98_3','Merge Intervals',''),p('98_4','Accounts Merge','')],revision:'Review Trees.'},
+{day:99,title:'Company Pattern (Adobe)',theory:[],problems:[p('99_1','Maximum Product Subarray',''),p('99_2','Product of Array Except Self',''),p('99_3','Group Anagrams',''),p('99_4','Course Schedule','')],revision:'Review Hashing.'},
+{day:100,title:'Mixed Revision',theory:[],problems:[p('100_1','Binary Search',''),p('100_2','Heap',''),p('100_3','Graph',''),p('100_4','DP',''),p('100_5','Tree','')],revision:'Goal: Solve 8 problems without hints.'},
+{day:101,title:'Hard Dynamic Programming',theory:['State Compression','Optimization'],problems:[p('101_1','Regular Expression Matching','H'),p('101_2','Wildcard Matching','H'),p('101_3','Distinct Subsequences','H')],revision:'Revise String DP.'},
+{day:102,title:'Hard Graph Problems',theory:[],problems:[p('102_1','Swim in Rising Water',''),p('102_2','Critical Connections in a Network',''),p('102_3','Bus Routes','')],revision:'Revise BFS & DFS.'},
+{day:103,title:'Hard Tree Problems',theory:[],problems:[p('103_1','Recover Binary Search Tree',''),p('103_2','Binary Tree Cameras',''),p('103_3','Maximum Width of Binary Tree','')],revision:'Review Tree DP.'},
+{day:104,title:'Hard Heap Problems',theory:[],problems:[p('104_1','IPO',''),p('104_2','Find Median from Data Stream',''),p('104_3','Merge K Sorted Lists','')],revision:'Heap implementation.'},
+{day:105,title:'Hard Backtracking',theory:[],problems:[p('105_1','N Queens',''),p('105_2','Sudoku Solver',''),p('105_3','Word Search II','')],revision:'Review recursion tree.'},
+{day:106,title:'Hard String Problems',theory:[],problems:[p('106_1','Text Justification',''),p('106_2','Minimum Window Substring',''),p('106_3','Edit Distance','')],revision:'Review KMP.'},
+{day:107,title:'Advanced Design',theory:[],problems:[p('107_1','Design Browser History',''),p('107_2','Design Underground System',''),p('107_3','Design Circular Deque','')],revision:'Review OOP concepts.'},
+{day:108,title:'Contest Simulation',theory:[],problems:[p('108_1','2 Easy',''),p('108_2','2 Medium',''),p('108_3','2 Hard','')],revision:'Improve speed. (Time Limit: 2 Hours)'},
+{day:109,title:'Blind 75 Revision (Part 1)',theory:[],problems:[p('109_1','Two Sum',''),p('109_2','Best Time to Buy and Sell Stock',''),p('109_3','Contains Duplicate',''),p('109_4','Product of Array Except Self',''),p('109_5','Maximum Subarray',''),p('109_6','Maximum Product Subarray',''),p('109_7','Find Minimum in Rotated Sorted Array',''),p('109_8','Search in Rotated Sorted Array','')],revision:'Revise Arrays & Math.'},
+{day:110,title:'Blind 75 Revision (Part 2)',theory:[],problems:[p('110_1','3Sum',''),p('110_2','Container With Most Water',''),p('110_3','Valid Parentheses',''),p('110_4','Min Stack',''),p('110_5','Daily Temperatures',''),p('110_6','Car Fleet',''),p('110_7','Evaluate Reverse Polish Notation',''),p('110_8','Generate Parentheses','')],revision:'Revise Stack & Two Pointers.'},
+{day:111,title:'Blind 75 Revision (Part 3)',theory:[],problems:[p('111_1','Reverse Linked List',''),p('111_2','Merge Two Sorted Lists',''),p('111_3','Reorder List',''),p('111_4','Linked List Cycle',''),p('111_5','Remove Nth Node',''),p('111_6','Add Two Numbers','')],revision:'Revise Linked Lists.'},
+{day:112,title:'Blind 75 Revision (Part 4)',theory:[],problems:[p('112_1','Maximum Depth of Binary Tree',''),p('112_2','Same Tree',''),p('112_3','Invert Binary Tree',''),p('112_4','Binary Tree Level Order Traversal',''),p('112_5','Validate BST',''),p('112_6','Kth Smallest Element in BST','')],revision:'Revise Trees.'},
+{day:113,title:'Blind 75 Revision (Part 5)',theory:[],problems:[p('113_1','Number of Islands',''),p('113_2','Clone Graph',''),p('113_3','Pacific Atlantic Water Flow',''),p('113_4','Course Schedule',''),p('113_5','Graph Valid Tree','')],revision:'Revise Graphs.'},
+{day:114,title:'Blind 75 Revision (Part 6)',theory:[],problems:[p('114_1','Climbing Stairs',''),p('114_2','Coin Change',''),p('114_3','House Robber',''),p('114_4','House Robber II',''),p('114_5','Longest Increasing Subsequence',''),p('114_6','Longest Common Subsequence','')],revision:'Revise Dynamic Programming.'},
+{day:115,title:'NeetCode 150 Challenge',theory:[],problems:[p('115_1','10 Random NeetCode 150 Problems','')],revision:'Goal: Complete within 3 hours.'},
+{day:116,title:'Mock Interview 1',theory:[],problems:[p('116_1','Medium Array',''),p('116_2','Medium Graph',''),p('116_3','Medium DP',''),p('116_4','Hard Tree','')],revision: 'Time Limit: 90 Minutes.'},
+{day:117,title:'Mock Interview 2',theory:[],problems:[p('117_1','Medium Heap',''),p('117_2','Medium Binary Search',''),p('117_3','Hard Graph',''),p('117_4','Medium Linked List','')],revision: 'Time Limit: 90 Minutes.'},
+{day:118,title:'Mock Interview 3',theory:[],problems:[p('118_1','Hard DP',''),p('118_2','Hard Graph',''),p('118_3','Medium Design',''),p('118_4','Medium Tree','')],revision: 'Time Limit: 90 Minutes.'},
+{day:119,title:'Weak Topics Revision',theory:['Graphs','DP','Trees','Binary Search','Heap','Sliding Window','Tries'],problems:[p('119_1','10 problems from your weakest area','')],revision:'Go through your notes and revisit your weakest topics.'},
+{day:120,title:'Final Interview Readiness',theory:[],problems:[p('120_1','Google / Meta Frequently Asked Hard Problem 1',''),p('120_2','Google / Meta Frequently Asked Hard Problem 2','')],revision:'Review mistakes and verify final time constraints.'}
+];
+
+  const getLocalStorageKey = () => `gridline_dsa_cache_${currentUserId}`;
+
+  async function saveDSAData() {
+    localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
+    await setDoc(syncDocRef, { state: state }, { merge: true });
+  }
+
+  function allProblemsDone(dObj) {
+    if (!dObj.problems || dObj.problems.length === 0) return true;
+    const subState = state[dObj.day]?.problems || {};
+    return dObj.problems.every(p => subState[p.id] === true);
+  }
+
+  function dayComplete(dObj) {
+    return state[dObj.day]?.theory && allProblemsDone(dObj);
+  }
+
+  // FIXED INITIALIZATION VECTOR: Sets layout objects into target state array exactly once
+  function buildInitialStructure() {
+    const list = document.getElementById('dayList');
+    list.innerHTML = '';
+
+    days.forEach(d => {
+      const card = document.createElement('div');
+      card.id = `day-card-${d.day}`;
+      card.className = 'day-card day-card-item p-4 mb-3';
+      
+      card.innerHTML = `
+        <div class="day-head flex items-center justify-between gap-4 cursor-pointer select-none" id="day-head-${d.day}">
+          <div class="flex items-center gap-4">
+            <span class="day-num text-xs font-bold text-slate-500 font-mono tracking-wider">DAY ${d.day}</span>
+            <span class="day-title text-sm font-semibold text-slate-200 transition-colors">${d.title}</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="mini-dots flex gap-1.5">
+              <span class="mini-dot" id="dot-theory-${d.day}"></span>
+              <span class="mini-dot" id="dot-problems-${d.day}"></span>
+            </div>
+            <span class="chevron text-slate-600 text-xs transform transition-transform duration-200" id="chevron-${d.day}">\u25b8</span>
+          </div>
+        </div>
+        <div class="day-body-wrapper" id="day-wrapper-${d.day}">
+          <div class="day-body-inner">
+            <div class="day-body border-t border-white/5 mt-4 pt-4 space-y-4" id="day-body-${d.day}"></div>
+          </div>
+        </div>
+      `;
+
+      card.querySelector(`#day-head-${d.day}`).onclick = () => toggleDayDropdown(d.day);
+      list.appendChild(card);
+      dayElementsMap[d.day] = card;
+    });
+  }
+
+  function toggleDayDropdown(dayId) {
+    const wrapper = document.getElementById(`day-wrapper-${dayId}`);
+    const chevron = document.getElementById(`chevron-${dayId}`);
+    
+    if (!wrapper.classList.contains('expanded')) {
+      // Close the old active layout dropdown node seamlessly
+      if (openDayId && openDayId !== dayId) {
+        const oldWrapper = document.getElementById(`day-wrapper-${openDayId}`);
+        const oldChevron = document.getElementById(`chevron-${openDayId}`);
+        if (oldWrapper) oldWrapper.classList.remove('expanded');
+        if (oldChevron) oldChevron.classList.remove('rotate-90');
+      }
+      
+      // Inject content first, then animate layout open
+      renderDayBodyContent(dayId);
+      wrapper.classList.add('expanded');
+      chevron.classList.add('rotate-90');
+      openDayId = dayId;
+    } else {
+      wrapper.classList.remove('expanded');
+      chevron.classList.remove('rotate-90');
+      openDayId = null;
+    }
+    
+    // Recalculate scrolling parameters down the screen coordinates safely
+    setTimeout(() => { ScrollTrigger.refresh(); }, 310);
+  }
+
+  function renderDayBodyContent(dayId) {
+    const d = days.find(x => x.day === dayId);
+    if (!d) return;
+    const body = document.getElementById(`day-body-${dayId}`);
+    const s = state[dayId] || { theory: false, problems: {} };
+    const probGlow = allProblemsDone(d);
+
+    let bodyHTML = '';
+    if (d.theory && d.theory.length) {
+      bodyHTML += `<div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">Theory</div>
+        <ul class="space-y-1.5">${d.theory.map(t => `<li class="text-xs text-slate-400 pl-3 relative before:content-['–'] before:absolute before:left-0 before:text-slate-600">${t}</li>`).join('')}</ul></div>`;
+    }
+    if (d.problems && d.problems.length) {
+      bodyHTML += `<div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">Problems</div>
+        <ul class="problem-list space-y-2"></ul></div>`;
+    }
+    if (d.revision) {
+      bodyHTML += `<div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Task / Revision Notes</div>
+        <div class="text-xs text-slate-400 italic opacity-90 border-l border-[var(--accent)]/30 pl-3">${d.revision}</div></div>`;
+    }
+    body.innerHTML = bodyHTML;
+
+    if (d.problems && d.problems.length) {
+      const ul = body.querySelector('.problem-list');
+      d.problems.forEach(pr => {
+        const isDone = s.problems?.[pr.id] === true;
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.04] transition-colors' + (isDone ? ' prob-done bg-[var(--accent)]/[0.01]' : '');
+        li.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="prob-box"></span>
+            <span class="text-xs font-medium ${isDone ? 'text-slate-400' : 'text-slate-200'}">${pr.name}</span>
+          </div>
+          ${pr.diff ? `<span class="diff-badge ${pr.diff}">${pr.diff === 'E' ? 'Easy' : pr.diff === 'M' ? 'Medium' : 'Hard'}</span>` : ''}
+        `;
+        
+        li.onclick = function(e) {
+          e.stopPropagation();
+          if (navigator.vibrate) navigator.vibrate(12);
+          if(!state[d.day]) state[d.day] = { theory: false, problems: {} };
+          if(!state[d.day].problems) state[d.day].problems = {};
+          const stateBefore = state[d.day].problems[pr.id];
+          state[d.day].problems[pr.id] = !state[d.day].problems[pr.id];
+          saveDSAData();
+          syncTargetCardState(dayId);
+          if (!stateBefore && dayComplete(d) && typeof confetti === 'function') triggerCelebrateConfetti();
+        };
+        ul.appendChild(li);
+      });
+    }
+
+    const checkRow = document.createElement('div');
+    checkRow.className = 'flex flex-wrap items-center gap-3 pt-2';
+    checkRow.innerHTML = `
+      <span class="check-pill interactive ${s.theory ? 'checked' : ''}" id="theoryPill_${d.day}"><span class="box"></span>Theory</span>
+      <span class="check-pill ${probGlow ? 'checked' : ''}"><span class="box"></span>Problems</span>
+      <button class="ml-auto text-xs font-bold py-2 px-4 rounded-full border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-colors" id="toggleDayBtn_${d.day}">${dayComplete(d) ? 'Unmark complete' : 'Mark day complete'}</button>
+    `;
+    body.appendChild(checkRow);
+
+    checkRow.querySelector(`#theoryPill_${d.day}`).onclick = function(e) {
+      e.stopPropagation();
+      if (navigator.vibrate) navigator.vibrate(12);
+      if(!state[d.day]) state[d.day] = { theory: false, problems: {} };
+      state[d.day].theory = !state[d.day].theory;
+      saveDSAData();
+      syncTargetCardState(dayId);
+      if (state[d.day].theory && dayComplete(d) && typeof confetti === 'function') triggerCelebrateConfetti();
+    };
+    
+    checkRow.querySelector(`#toggleDayBtn_${d.day}`).onclick = function(e) {
+      e.stopPropagation();
+      if (navigator.vibrate) navigator.vibrate(15);
+      if(!state[d.day]) state[d.day] = { theory: false, problems: {} };
+      if(!state[d.day].problems) state[d.day].problems = {};
+      if (dayComplete(d)) {
+        state[d.day].theory = false;
+        d.problems.forEach(pr => { state[d.day].problems[pr.id] = false; });
+      } else {
+        state[d.day].theory = true;
+        d.problems.forEach(pr => { state[d.day].problems[pr.id] = true; });
+        if (typeof confetti === 'function') triggerCelebrateConfetti();
+      }
+      saveDSAData();
+      syncTargetCardState(dayId);
+    };
+  }
+
+  function syncTargetCardState(dayId) {
+    const d = days.find(x => x.day === dayId);
+    const card = dayElementsMap[dayId];
+    if (!card || !d) return;
+
+    const s = state[dayId] || { theory: false, problems: {} };
+    const probGlow = allProblemsDone(d);
+    const isCompleted = dayComplete(d);
+
+    if (isCompleted) card.classList.add('complete'); else card.classList.remove('complete');
+    
+    const dotTheory = card.querySelector(`#dot-theory-${dayId}`);
+    const dotProblems = card.querySelector(`#dot-problems-${dayId}`);
+    
+    if (s.theory) dotTheory.classList.add('on'); else dotTheory.classList.remove('on');
+    if (probGlow) dotProblems.classList.add('on'); else dotProblems.classList.remove('on');
+
+    if (openDayId === dayId) {
+      renderDayBodyContent(dayId);
+    }
+    updateOverview();
+  }
+
+  function syncAllCardVisuals() {
+    days.forEach(d => {
+      const card = dayElementsMap[d.day];
+      if (!card) return;
+      const s = state[d.day] || { theory: false, problems: {} };
+      const probGlow = allProblemsDone(d);
+      const isCompleted = dayComplete(d);
+
+      if (isCompleted) card.classList.add('complete'); else card.classList.remove('complete');
+      
+      const dotTheory = card.querySelector(`#dot-theory-${d.day}`);
+      const dotProblems = card.querySelector(`#dot-problems-${d.day}`);
+      
+      if (s.theory) dotTheory.classList.add('on'); else dotTheory.classList.remove('on');
+      if (probGlow) dotProblems.classList.add('on'); else dotProblems.classList.remove('on');
+    });
+    updateOverview();
+  }
+
+  function triggerCelebrateConfetti() {
+    confetti({ particleCount: 70, spread: 65, origin: { y: 0.85 }, colors: ['#34d399', '#ffffff'] });
+  }
+
+  function updateOverview() {
+    const complete = days.filter(d => dayComplete(d)).length;
+    let problemsSolved = 0;
+    days.forEach(d => {
+      if (d.problems) {
+        d.problems.forEach(pr => { if (state[d.day]?.problems?.[pr.id] === true) problemsSolved++; });
+      }
+    });
+    const pct = Math.round(complete / 120 * 100);
+    let streak = 0;
+    for (let i = days.length; i >= 1; i--) {
+      const d = days.find(x => x.day === i);
+      if (d && dayComplete(d)) streak++; else break;
+    }
+    document.getElementById('daysStat').innerHTML = `${complete}<span class="text-xs text-slate-500 font-medium lowercase tracking-normal"> / 120 days complete</span>`;
+    document.getElementById('problemsStat').textContent = problemsSolved;
+    document.getElementById('pctStat').textContent = pct + '%';
+    document.getElementById('streakStat').textContent = streak;
+    
+    gsap.to("#progressFill", { width: pct + "%", duration: 0.5, ease: "power2.out" });
+  }
+
+  // Initialize structural grids safely before attaching sync pipelines
+  buildInitialStructure();
+
+  // --- GLOBAL REAL-TIME PIPELINE ASYNC MATRIX ---
+async function initializeDSASync() {
+  try {
+    const profileDocRef = doc(db, "habit_users", normalizedId);
+    const profileSnapshot = await getDoc(profileDocRef);
+    if (profileSnapshot.exists()) {
+      currentUserProfile = profileSnapshot.data();
+      updateHeaderName(currentUserProfile.username);
+    }
+  } catch (e) {
+    console.error("Profile sync failure:", e);
+  }
+
+  onSnapshot(syncDocRef, (snapshot) => {
+    document.body.classList.remove('skeleton-loading');
+    if (snapshot.exists()) {
+      state = snapshot.data().state || {};
+    } else {
+      state = {};
+      days.forEach(d => {
+        state[d.day] = { theory: false, problems: {} };
+        if (d.problems) d.problems.forEach(pr => { state[d.day].problems[pr.id] = false; });
+      });
+    }
+    localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
+    
+    syncAllCardVisuals();
+
+    if (!isAppLoaded) {
+      animateEntrance();
+      isAppLoaded = true;
+    }
+  });
+}
+
+// Start the network sync
+initializeDSASync();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "short_name": "Gridline",
+  "name": "Habit-Tracker",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "402x396 512x512 192x192 256x256",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/tracker.html",
+  "background_color": "#040c08",
+  "theme_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gridline — Habit Tracker</title>
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1/dist/lenis.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      /* Dark Emerald & Mint Accent Palette */
+      --accent: #34d399;
+      --accent-dim: rgba(52, 211, 153, 0.15);
+      --accent-glow: rgba(52, 211, 153, 0.25);
+      --bg: #040c08;
+      --glass-bg: rgba(255, 255, 255, 0.01);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-dim: #9db8ab;
+      --radius: 24px;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #E2E8F0;
+      background-color: var(--bg);
+      overflow-x: clip;
+      min-height: 100vh;
+    }
+
+    /* Aurora Background */
+    .bg-mesh {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('bkg5gpt.png');
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(11, 14, 20, 0.2) 0%, rgba(11, 14, 20, 0.6) 100%);
+      z-index: -1;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.01);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    }
+
+    /* Micro Hover Feedback Effects */
+    @media (min-width: 768px) {
+      .glass-card:hover {
+        transform: scale(1.01);
+        border-color: rgba(52, 211, 153, 0.35);
+        box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.4), 0 0 16px rgba(52, 211, 153, 0.15);
+      }
+    }
+
+    /* Dynamic Ambient Border Glow Keyframes */
+    @keyframes borderGlowPulse {
+      0% { border-color: var(--glass-border); }
+      50% { border-color: rgba(52, 211, 153, 0.25); }
+      100% { border-color: var(--glass-border); }
+    }
+
+    .card-glow-animated {
+      animation: borderGlowPulse 4s ease-in-out infinite;
+    }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+    }
+
+    .heatmap-square {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .heatmap-square:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: #131315;
+      border: 1px solid var(--glass-border);
+      color: #fff;
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* Habit Grid Table Framework */
+    .habit-grid-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+    }
+
+    .sticky-habit {
+      position: sticky;
+      left: 0;
+      background: rgba(11, 14, 20, 0.95);
+      backdrop-filter: blur(16px);
+      z-index: 10;
+      border-right: 1px solid var(--glass-border);
+      white-space: nowrap;
+    }
+
+    .grid-container {
+      max-height: 520px;
+      overflow-x: auto;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+      max-width: 100%;
+      border-bottom: 1px solid var(--glass-border);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .habit-grid-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 14, 20, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .habit-grid-table thead th.sticky-habit {
+      z-index: 30;
+    }
+
+    .chk-cell {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      text-align: center;
+      cursor: pointer;
+      border-right: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .chk-rect {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--glass-border);
+      border-radius: 6px;
+      margin: 0 auto;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chk-rect.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .chk-rect svg {
+      width: 14px;
+      height: 14px;
+      color: #000;
+    }
+
+    .add-habit-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .floating-nav {
+      position: sticky;
+      top: 24px;
+      z-index: 100;
+      margin: 0 auto 32px;
+      width: fit-content;
+      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+    }
+
+    .nav-item {
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      color: var(--accent);
+      background: var(--accent-dim);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--accent);
+    }
+
+    /* ============ MOBILE RESPONSIVE FIXES ============ */
+    @media (max-width: 640px) {
+      :root {
+        --radius: 16px;
+      }
+
+      .floating-nav {
+        top: 12px;
+        margin-bottom: 24px;
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 20px;
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: space-between;
+      }
+
+      .nav-brand {
+        border-right: none !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        order: 1;
+      }
+
+      .nav-item {
+        order: 2;
+        padding: 7px 14px;
+        font-size: 11px;
+        margin-left: 0 !important;
+        background: var(--accent-dim);
+        color: var(--accent);
+        border: 1px solid var(--glass-border);
+      }
+
+      .nav-month {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: space-between !important;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        border-radius: 100px;
+        padding: 4px;
+      }
+
+      .nav-btn {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+
+      #monthLabel {
+        min-width: 0 !important;
+        flex: 1;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+
+      .sticky-habit {
+        min-width: 132px !important;
+        max-width: 150px;
+      }
+
+      .sticky-habit input {
+        font-size: 12px !important;
+      }
+
+      .habit-grid-table thead th {
+        min-width: 38px !important;
+        padding: 6px 4px !important;
+      }
+
+      .chk-cell {
+        width: 38px;
+        height: 40px;
+        min-width: 38px;
+      }
+
+      .chk-rect {
+        width: 20px;
+        height: 20px;
+      }
+
+      .grid-container {
+        max-height: 420px;
+      }
+
+      .row-del {
+        opacity: 0.6;
+      }
+
+      .heatmap-square {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    /* Skeleton Utility */
+    .skeleton-loading .stat-value,
+    .skeleton-loading tr {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      color: transparent !important;
+    }
+
+    .skeleton-loading .stat-value::after,
+    .skeleton-loading tr::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+      animation: pulseSkeleton 1.4s infinite linear;
+    }
+    @keyframes pulseSkeleton {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Splash Screen Setup */
+    #app-splash-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #040c08;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
+    }
+    #app-splash-screen.dismissed {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .splash-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #app-splash-screen .brand-mark-large {
+      width: 60px;
+      height: 60px;
+      border: 3px solid var(--accent);
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      padding: 8px;
+      gap: 6px;
+      animation:
+        gridlineCircle 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+        gridlineGlowPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+    }
+
+    #app-splash-screen .brand-mark-large span {
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+    #app-splash-screen .brand-mark-large span:nth-child(1),
+    #app-splash-screen .brand-mark-large span:nth-child(4) {
+      background: var(--accent);
+    }
+
+    .splash-text {
+      opacity: 0;
+      animation: textFadeIn 0.3s ease-out 0.65s forwards;
+    }
+
+    @keyframes gridlineCircle {
+      0% { transform: rotate(0deg) scale(0.3); opacity: 0; }
+      100% { transform: rotate(360deg) scale(1); opacity: 1; }
+    }
+
+    @keyframes gridlineGlowPop {
+      0% { transform: scale(1); box-shadow: 0 0 0px transparent; }
+      50% { transform: scale(1.2); box-shadow: 0 0 25px var(--accent-glow); background-color: var(--accent-dim); }
+      100% { transform: scale(1.05); box-shadow: 0 0 15px var(--accent-glow); }
+    }
+
+    @keyframes textFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .row-del {
+      opacity: 0;
+      background: none;
+      border: none;
+      color: #ff6f6b;
+      cursor: pointer;
+      font-size: 16px;
+      transition: opacity 0.2s;
+    }
+    tr:hover .row-del { opacity: 1; }
+  </style>
+</head>
+<body class="skeleton-loading">
+
+<div id="app-splash-screen">
+  <div class="splash-logo">
+    <div class="brand-mark-large"><span></span><span></span><span></span><span></span></div>
+    <div class="splash-text text-xl font-bold tracking-widest text-white uppercase" id="splashBrandLabel">Gridline</div>
+    <div class="splash-text text-[11px] text-slate-500 font-mono tracking-tighter">chasing the streak...</div>
+  </div>
+</div>
+
+<script>
+  if (sessionStorage.getItem('gridline_session_active') === 'true') {
+    document.getElementById('app-splash-screen').style.display = 'none';
+  }
+</script>
+
+<div class="bg-mesh"></div>
+
+<div class="bg-mesh"></div>
+<div class="bg-overlay"></div>
+
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 sm:py-8 relative z-10 opacity-0" id="mainContentWrap">
+
+  <nav class="floating-nav" id="mainNav">
+    <div class="nav-brand flex items-center px-4 gap-3 border-r border-white/10 mr-2">
+      <div class="w-6 h-6 border-2 border-[var(--accent)] rounded-md grid grid-cols-2 grid-rows-2 p-0.5 gap-0.5">
+        <span class="bg-[var(--accent)] rounded-xs"></span>
+        <span class="bg-white/20 rounded-xs"></span>
+        <span class="bg-white/20 rounded-xs"></span>
+        <span class="bg-[var(--accent)] rounded-xs"></span>
+      </div>
+      <span class="font-bold text-sm tracking-tight">GRIDLINE</span>
+    </div>
+    <div class="nav-month flex items-center gap-2">
+      <button class="nav-btn" id="prevMonth"><i class="ti ti-chevron-left"></i></button>
+      <span class="text-xs font-mono min-w-[130px] text-center" id="monthLabel"></span>
+      <button class="nav-btn" id="nextMonth"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <a href="dsa.html" class="nav-item ml-4">
+      <i class="ti ti-bolt"></i> DSA TRACKER
+    </a>
+  </nav>
+
+  <div class="flex flex-col gap-4 md:gap-6">
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-stretch reveal-panel" id="kpiContainer">
+    <div class="kpi-card glass-card p-4 md:p-5 card-glow-animated flex justify-between items-center h-[92px] md:h-[104px]">
+      <div class="flex flex-col justify-center min-w-0">
+        <div class="kpi-label text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold leading-none truncate">Goal</div>
+        <div class="text-2xl md:text-3xl stat-value leading-none" id="statGoal">0</div>
+      </div>
+      <i class="ti ti-target-arrow text-2xl md:text-3xl text-slate-600/50 shrink-0 w-8 md:w-9 text-center self-center" aria-hidden="true"></i>
+    </div>
+    <div class="kpi-card glass-card p-4 md:p-5 card-glow-animated flex justify-between items-center h-[92px] md:h-[104px]">
+      <div class="flex flex-col justify-center min-w-0">
+        <div class="kpi-label text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold leading-none truncate">Completed</div>
+        <div class="text-2xl md:text-3xl stat-value text-[var(--accent)] leading-none" id="statCompleted">0</div>
+      </div>
+      <i class="ti ti-checkbox text-2xl md:text-3xl text-[var(--accent)]/40 shrink-0 w-8 md:w-9 text-center self-center" aria-hidden="true"></i>
+    </div>
+    <div class="kpi-card glass-card p-4 md:p-5 card-glow-animated flex justify-between items-center h-[92px] md:h-[104px]">
+      <div class="flex flex-col justify-center min-w-0">
+        <div class="kpi-label text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold leading-none truncate">Left</div>
+        <div class="text-2xl md:text-3xl stat-value leading-none" id="statLeft">0</div>
+      </div>
+      <i class="ti ti-hourglass-empty text-2xl md:text-3xl text-slate-600/50 shrink-0 w-8 md:w-9 text-center self-center" aria-hidden="true"></i>
+    </div>
+    <div class="kpi-card glass-card p-4 md:p-5 card-glow-animated flex justify-between items-center h-[92px] md:h-[104px]">
+      <div class="flex flex-col justify-center min-w-0">
+        <div class="kpi-label text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold leading-none truncate">Streak</div>
+        <div class="text-2xl md:text-3xl stat-value leading-none" id="statStreak">0</div>
+      </div>
+      <i class="ti ti-flame text-2xl md:text-3xl text-orange-500/40 animate-pulse shrink-0 w-8 md:w-9 text-center self-center" aria-hidden="true"></i>
+    </div>
+  </div>
+
+  <div class="glass-card p-4 md:p-6 reveal-panel">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 font-bold flex items-center gap-2">
+        <i class="ti ti-grid-dots text-[var(--accent)]"></i> Consistency Matrix
+      </h3>
+      <div class="flex items-center gap-2 text-[10px] text-slate-500">
+        <span>Less</span>
+        <div class="flex gap-1">
+          <div class="w-2.5 h-2.5 rounded-xs bg-white/5"></div>
+          <div class="w-2.5 h-2.5 rounded-xs bg-[var(--accent)]/30"></div>
+          <div class="w-2.5 h-2.5 rounded-xs bg-[var(--accent)]/60"></div>
+          <div class="w-2.5 h-2.5 rounded-xs bg-[var(--accent)]"></div>
+        </div>
+        <span>More</span>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-1.5 md:gap-2" id="heatmapGrid"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+    <div class="lg:col-span-2 glass-card p-4 md:p-6 reveal-panel">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-bold flex items-center gap-2">
+        <i class="ti ti-chart-bar text-[var(--accent)]"></i> Daily Completion
+      </h3>
+      <div class="h-[160px] md:h-[200px]">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+    <div class="glass-card p-4 md:p-6 flex flex-col items-center justify-center reveal-panel">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-bold w-full text-left flex items-center gap-2">
+        <i class="ti ti-chart-donut text-[var(--accent)]"></i> Overall Progress
+      </h3>
+      <div class="relative w-32 h-32 md:w-40 md:h-40">
+        <canvas id="donutChart"></canvas>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="text-3xl md:text-4xl font-bold stat-value" id="donutPct">0%</span>
+          <span class="text-[9px] uppercase tracking-tighter text-slate-500">Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card reveal-panel overflow-hidden">
+    <div class="p-4 md:p-5 border-b border-white/5 flex items-center justify-between gap-2">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 font-bold flex items-center gap-2">
+        <i class="ti ti-list-check text-[var(--accent)]"></i> Habit Grid
+      </h3>
+      <span class="text-[9px] text-slate-600 sm:hidden uppercase tracking-wider">Swipe &rarr;</span>
+    </div>
+
+    <div class="grid-container">
+      <table class="habit-grid-table font-mono">
+        <thead>
+          <tr id="gridHeadRow" class="text-[9px] uppercase tracking-wider text-slate-500">
+            <th class="sticky-habit p-4 text-left min-w-[220px] text-xs font-bold text-slate-400">Habits</th>
+          </tr>
+        </thead>
+        <tbody id="gridBody"></tbody>
+      </table>
+    </div>
+
+    <div class="p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.005]">
+      <div class="flex items-center gap-3 w-full max-w-sm bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 focus-within:border-[var(--accent)] transition-colors">
+        <i class="ti ti-plus text-slate-500 text-sm"></i>
+        <input id="newHabitInput" placeholder="Add custom tracking vector (Press Enter)..." class="add-habit-input font-sans text-sm">
+      </div>
+      <div class="text-[11px] text-slate-500 italic opacity-80 border-l-2 border-[var(--accent)]/40 pl-3 select-none sm:text-right">
+        "My motivation has trust issues. That's why I rely on habits."
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 reveal-panel mt-6 md:mt-10">
+    <div class="glass-card p-4 md:p-6">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-bold flex items-center gap-2">
+        <i class="ti ti-trending-up text-[var(--accent)]"></i> Performance Analysis
+      </h3>
+      <div class="space-y-4" id="analysisBody"></div>
+    </div>
+    <div class="glass-card p-4 md:p-6">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-bold flex items-center gap-2">
+        <i class="ti ti-trophy text-[var(--accent)]"></i> Habit Ranking
+      </h3>
+      <div class="space-y-3" id="rankList"></div>
+    </div>
+  </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const lenis = new Lenis({ autoRaf: true });
+  gsap.registerPlugin(ScrollTrigger);
+
+ // --- MULTI-USER AUTH ENGINE ---
+const currentUserId = localStorage.getItem("habit_current_user");
+
+if (!currentUserId) {
+  window.location.href = "/";
+}
+
+// Normalize ID and establish baseline profile references
+const normalizedId = currentUserId ? currentUserId.trim().toLowerCase() : "";
+let currentUserProfile = { username: "Achiever" };
+
+// Dynamic welcome string wrapper function
+function updateWelcomeHeader(nameString) {
+  const firstName = nameString.trim().split(' ')[0];
+  document.getElementById('splashBrandLabel').textContent = `Gridline × ${firstName}`;
+}
+
+// Set a safe initial layout fallback string
+updateWelcomeHeader(currentUserProfile.username);
+  let isAppLoaded = false;
+  const isFirstLoadThisSession = !sessionStorage.getItem('gridline_session_active');
+
+  const animateEntrance = () => {
+    gsap.to("#mainContentWrap", { opacity: 1, duration: 0.2 });
+    gsap.to("#mainNav", { opacity: 1, y: 0, duration: 0.8, ease: "power4.out" });
+    gsap.from(".reveal-panel", {
+      opacity: 0,
+      y: 20,
+      filter: "blur(6px)",
+      duration: 0.6,
+      stagger: 0.06,
+      ease: "power3.out",
+      onComplete: () => {
+        animateNumbersOnEntry();
+      }
+    });
+  };
+
+  const animateNumbersOnEntry = () => {
+    const targets = [
+      { id: 'statGoal', val: currentStats.goal },
+      { id: 'statCompleted', val: currentStats.actual },
+      { id: 'statLeft', val: currentStats.left },
+      { id: 'statStreak', val: currentStats.streak }
+    ];
+
+    targets.forEach(item => {
+      const el = document.getElementById(item.id);
+      if (!el) return;
+      let counter = { value: 0 };
+      gsap.to(counter, {
+        value: item.val,
+        duration: 1.2,
+        ease: "power2.out",
+        onUpdate: () => {
+          el.textContent = Math.floor(counter.value);
+        }
+      });
+    });
+
+    let pctCounter = { value: 0 };
+    const pctEl = document.getElementById('donutPct');
+    if (pctEl) {
+      gsap.to(pctCounter, {
+        value: currentStats.pct,
+        duration: 1.4,
+        ease: "power3.out",
+        onUpdate: () => {
+          pctEl.textContent = Math.floor(pctCounter.value) + '%';
+        }
+      });
+    }
+  };
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPzwIgNdFVgzxbmBBzl7a1uWCEUGrcR1A", 
+    authDomain: "tracker-370f1.firebaseapp.com",
+    projectId: "tracker-370f1",
+    storageBucket: "tracker-370f1.firebasestorage.app",
+    messagingSenderId: "188560245686",
+    appId: "1:188560245686:web:4efbe3e9a87d77ba427717",
+    measurementId: "G-7VPTSF1YXJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  const syncDocRef = doc(db, "gridline", `user_${normalizedId}`);
+
+  const DOT_COLORS=['#34d399','#5eead4','#0d9488','#2dd4bf','#a7f3d0','#14b8a6','#059669','#34d399'];
+  const CHECK_SVG='<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.7L13 4.5" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  const isMobile = window.matchMedia('(max-width: 640px)').matches;
+
+  let habits = [];
+  let nextId = 1;
+  let checks = new Set();
+  const today = new Date();
+  let current = new Date(today.getFullYear(), today.getMonth(), 1);
+  let barChart, donutChart;
+  
+  let currentStats = { goal: 0, actual: 0, left: 0, streak: 0, pct: 0 };
+
+  const dateKey = (y,m,d) => `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  const daysInMonth = (y,m) => new Date(y,m+1,0).getDate();
+  const isToday = (y,m,d) => today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
+
+  const getLocalStorageKey = () => `gridline_habit_cache_${normalizedId}`;
+
+  function loadLocalCachedData() {
+    const cached = localStorage.getItem(getLocalStorageKey());
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        habits = parsed.habits || [];
+        checks = new Set(parsed.checks || []);
+        nextId = habits.length > 0 ? Math.max(...habits.map(h => h.id)) + 1 : 1;
+        document.body.classList.remove('skeleton-loading');
+        render();
+      } catch(e) {}
+    }
+  }
+  loadLocalCachedData();
+
+  async function saveData() {
+    const payload = { habits: habits, checks: Array.from(checks) };
+    localStorage.setItem(getLocalStorageKey(), JSON.stringify(payload));
+    await setDoc(syncDocRef, payload, { merge: true });
+  }
+
+  function render() {
+    const y = current.getFullYear(), m = current.getMonth();
+    const dim = daysInMonth(y, m);
+    
+    document.getElementById('monthLabel').innerHTML = `
+      <div class="text-[10px] text-[var(--accent)] tracking-normal font-sans mb-0.5">${currentUserProfile.username.toUpperCase()}</div>
+      <span>${current.toLocaleString('default', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
+    `;
+
+    renderHead(y, m, dim);
+    renderBody(y, m, dim);
+    renderStatsAndCharts(y, m, dim);
+    renderAnalysis(y, m, dim);
+    renderRanking(y, m, dim);
+    renderMatrixGrid(y, m, dim);
+  }
+
+  function renderHead(y, m, dim) {
+    const row = document.getElementById('gridHeadRow');
+    row.innerHTML = '<th class="sticky-habit p-4 text-left min-w-[220px] text-xs font-bold text-slate-400">Habits</th>';
+    for (let d = 1; d <= dim; d++) {
+      const th = document.createElement('th');
+      th.className = `p-2 text-center min-w-[48px] border-r border-white/5 ${isToday(y, m, d) ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : ''}`;
+      th.innerHTML = `<div class="flex flex-col"><span class="text-[8px] opacity-40">${new Date(y,m,d).toLocaleString('default',{weekday:'short'})[0]}</span><span>${d}</span></div>`;
+      row.appendChild(th);
+    }
+  }
+
+  function renderBody(y, m, dim) {
+    const body = document.getElementById('gridBody');
+    body.innerHTML = '';
+    habits.forEach(h => {
+      const tr = document.createElement('tr');
+      const nameTd = document.createElement('td');
+      nameTd.className = 'sticky-habit p-3 md:p-4 border-b border-white/5';
+      nameTd.innerHTML = `
+        <div class="flex items-center gap-2 md:gap-3">
+          <div class="w-2 h-2 rounded-full shrink-0" style="background:${DOT_COLORS[h.color % DOT_COLORS.length]}; box-shadow: 0 0 8px ${DOT_COLORS[h.color % DOT_COLORS.length]}"></div>
+          <input class="bg-transparent border-none text-sm text-white focus:outline-none w-full" value="${h.name}" data-id="${h.id}">
+          <button class="row-del" data-id="${h.id}">\u00d7</button>
+        </div>
+      `;
+      tr.appendChild(nameTd);
+
+      for (let d = 1; d <= dim; d++) {
+        const key = `${h.id}_${dateKey(y, m, d)}`;
+        const td = document.createElement('td');
+        td.className = 'chk-cell';
+        const on = checks.has(key);
+        td.innerHTML = `<div class="chk-rect ${on ? 'checked' : ''}">${on ? CHECK_SVG : ''}</div>`;
+        td.addEventListener('click', () => toggleCheck(key, td, y, m, d));
+        tr.appendChild(td);
+      }
+      body.appendChild(tr);
+    });
+
+    body.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('change', e => {
+        const h = habits.find(x => x.id == e.target.dataset.id);
+        if (h) { h.name = e.target.value || h.name; saveData(); }
+      });
+    });
+
+    body.querySelectorAll('.row-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        habits = habits.filter(h => h.id != btn.dataset.id);
+        saveData();
+        render();
+      });
+    });
+
+    scrollGridToToday(y, m);
+  }
+
+  function scrollGridToToday(y, m) {
+    if (today.getFullYear() !== y || today.getMonth() !== m) return;
+    const container = document.querySelector('.grid-container');
+    const cellW = isMobile ? 38 : 48;
+    const stickyW = isMobile ? 132 : 220;
+    const target = stickyW + (today.getDate() - 1) * cellW - (container.clientWidth - stickyW) / 2 + cellW / 2;
+    container.scrollLeft = Math.max(0, target);
+  }
+
+  function toggleCheck(key, td, y, m, d) {
+    const chk = td.querySelector('.chk-rect');
+    let checkedStateChange = false;
+    if (navigator.vibrate) navigator.vibrate(12);
+
+    if (checks.has(key)) {
+      checks.delete(key);
+      chk.classList.remove('checked');
+      chk.innerHTML = '';
+    } else {
+      checks.add(key);
+      chk.classList.add('checked');
+      chk.innerHTML = CHECK_SVG;
+      checkedStateChange = true;
+      gsap.from(chk, { scale: 1.2, duration: 0.3, ease: "back.out(2)" });
+    }
+    saveData();
+    renderStatsAndCharts(y, m, daysInMonth(y, m));
+    renderMatrixGrid(y, m, daysInMonth(y, m));
+
+    if (checkedStateChange) {
+      const dailyTotal = habits.every(h => checks.has(`${h.id}_${dateKey(y, m, d)}`));
+      if (dailyTotal && habits.length > 0) {
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.8 }, colors: ['#34d399', '#0d9488', '#ffffff'] });
+      }
+    }
+  }
+
+  function renderStatsAndCharts(y, m, dim) {
+    const goal = habits.length * dim;
+    let actual = 0;
+    const dailyCounts = [];
+    for (let d = 1; d <= dim; d++) {
+      let c = 0;
+      habits.forEach(h => { if (checks.has(`${h.id}_${dateKey(y, m, d)}`)) c++; });
+      dailyCounts.push(c);
+      actual += c;
+    }
+    const left = goal - actual;
+    const pct = goal ? Math.round(actual / goal * 100) : 0;
+
+    let streak = 0;
+    for (let d = dim; d >= 1; d--) {
+      const allDone = habits.length > 0 && habits.every(h => checks.has(`${h.id}_${dateKey(y, m, d)}`));
+      if (allDone) streak++; else break;
+    }
+
+    currentStats = { goal, actual, left, streak, pct };
+
+    if (isAppLoaded) {
+      document.getElementById('statGoal').textContent = goal;
+      document.getElementById('statCompleted').textContent = actual;
+      document.getElementById('statLeft').textContent = left;
+      document.getElementById('statStreak').textContent = streak;
+      document.getElementById('donutPct').textContent = pct + '%';
+    }
+
+    const dayLabels = dailyCounts.map((_, i) => i + 1);
+    const dailyPct = dailyCounts.map(c => habits.length ? Math.round(c / habits.length * 100) : 0);
+
+    if (barChart) barChart.destroy();
+    barChart = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: { labels: dayLabels, datasets: [{ data: dailyPct, backgroundColor: '#34d399', borderRadius: 4, barThickness: isMobile ? 5 : 12 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#64748B', font: { size: isMobile ? 8 : 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: isMobile ? 10 : 31 } },
+          y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748B', font: { size: isMobile ? 8 : 10 }, callback: v => v + '%' } }
+        }
+      }
+    });
+
+    if (donutChart) donutChart.destroy();
+    donutChart = new Chart(document.getElementById('donutChart'), {
+      type: 'doughnut',
+      data: { datasets: [{ data: [actual, left > 0 ? left : 0], backgroundColor: ['#34d399', 'rgba(255,255,255,0.05)'], borderWidth: 0, hoverOffset: 0 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '85%',
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+  }
+
+  function renderMatrixGrid(y, m, dim) {
+    const container = document.getElementById('heatmapGrid');
+    container.innerHTML = '';
+    for(let d=1; d<=dim; d++) {
+      let completed = 0;
+      habits.forEach(h => { if(checks.has(`${h.id}_${dateKey(y,m,d)}`)) completed++; });
+      const ratio = habits.length ? (completed / habits.length) : 0;
+      const square = document.createElement('div');
+      square.className = 'heatmap-square';
+      square.setAttribute('data-tip', `Day ${d}: ${completed}/${habits.length} Done`);
+      if (ratio > 0) {
+        square.style.background = `rgba(52, 211, 153, ${0.1 + (ratio * 0.9)})`;
+        if (ratio === 1) square.style.boxShadow = '0 0 8px rgba(52,211,153,0.4)';
+      }
+      container.appendChild(square);
+    }
+  }
+
+  function renderAnalysis(y, m, dim) {
+    const body = document.getElementById('analysisBody');
+    body.innerHTML = '';
+    habits.forEach(h => {
+      let actual = 0;
+      for (let d = 1; d <= dim; d++) { if (checks.has(`${h.id}_${dateKey(y, m, d)}`)) actual++; }
+      const pct = dim ? Math.round(actual / dim * 100) : 0;
+      const row = document.createElement('div');
+      row.className = 'space-y-2';
+      row.innerHTML = `
+        <div class="flex justify-between items-center text-xs gap-2">
+          <span class="font-medium text-slate-200 truncate">${h.name}</span>
+          <span class="text-slate-400 font-mono whitespace-nowrap">${actual}/${dim} (${pct}%)</span>
+        </div>
+        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <div class="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style="width:${pct}%"></div>
+        </div>
+      `;
+      body.appendChild(row);
+    });
+  }
+
+  function renderRanking(y, m, dim) {
+    const list = document.getElementById('rankList');
+    const ranked = habits.map(h => {
+      let actual = 0;
+      for (let d = 1; d <= dim; d++) { if (checks.has(`${h.id}_${dateKey(y, m, d)}`)) actual++; }
+      return { h, actual, pct: dim ? Math.round(actual / dim * 100) : 0 };
+    }).sort((a, b) => b.actual - a.actual);
+
+    list.innerHTML = ranked.map((r, i) => `
+      <div class="flex items-center justify-between p-3 bg-white/[0.02] rounded-xl border border-white/5 gap-2">
+        <div class="flex items-center gap-3 md:gap-4 min-w-0">
+          <span class="text-xs font-bold text-slate-500 shrink-0">${i+1}</span>
+          <span class="text-sm font-medium text-slate-200 truncate">${r.h.name}</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          ${i === 0 ? '<i class="ti ti-trophy text-[var(--accent)] text-lg"></i>' : ''}
+          <span class="text-xs font-mono text-[var(--accent)] font-bold">${r.pct}%</span>
+        </div>
+      </div>
+    `).join('') || '<div class="text-slate-500 text-xs text-center py-4">No data yet</div>';
+  }
+
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+    render();
+    animateNumbersOnEntry();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+    render();
+    animateNumbersOnEntry();
+  });
+
+  function addHabit() {
+    const inp = document.getElementById('newHabitInput');
+    const val = inp.value.trim();
+    if (!val) return;
+    habits.push({ id: nextId++, name: val, color: habits.length });
+    inp.value = '';
+    saveData();
+    render();
+  }
+  document.getElementById('newHabitInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) addHabit(); });
+
+  function forceShowApp() {
+    if (isAppLoaded) return;
+    document.body.classList.remove('skeleton-loading');
+    render();
+    const splash = document.getElementById('app-splash-screen');
+    if (splash) splash.classList.add('dismissed');
+    animateEntrance();
+    isAppLoaded = true;
+    sessionStorage.setItem('gridline_session_active', 'true');
+  }
+
+// --- ASYNC DATA ROUTER ENGINE ---
+async function initializeCloudSync() {
+  try {
+    // 1. Fetch user identity data from the shared global collection path
+    const profileDocRef = doc(db, "habit_users", normalizedId);
+    const profileSnapshot = await getDoc(profileDocRef);
+    
+    if (profileSnapshot.exists()) {
+      currentUserProfile = profileSnapshot.data();
+      updateWelcomeHeader(currentUserProfile.username);
+    }
+  } catch (error) {
+    console.error("Failed to download profile identities from cluster:", error);
+  }
+
+  // 2. Open the real-time habits snapshot subscription
+  onSnapshot(syncDocRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      habits = data.habits || [];
+      checks = new Set(data.checks || []);
+      nextId = habits.length > 0 ? Math.max(...habits.map(h => h.id)) + 1 : 1;
+    } else {
+      // Default baseline values to display if this is a newly initialized cloud account
+      habits = [
+        {id:1, name:'🌅 Wake up at 05:00', color:0},
+        {id:2, name:'💪 Gym', color:1},
+        {id:3, name:'📖 Reading / learning', color:2},
+        {id:4, name:'🗓️ Day planning', color:3},
+        {id:5, name:'🚫 No alcohol', color:4}
+      ];
+      checks = new Set();
+      nextId = 6;
+    }
+
+    localStorage.setItem(getLocalStorageKey(), JSON.stringify({ habits: habits, checks: Array.from(checks) }));
+
+    if (!isAppLoaded) {
+      if (!isFirstLoadThisSession) {
+        document.body.classList.remove('skeleton-loading');
+        render();
+        const splash = document.getElementById('app-splash-screen');
+        if (splash) splash.remove();
+        animateEntrance();
+        isAppLoaded = true;
+      } else {
+        render();
+        setTimeout(() => {
+          document.body.classList.remove('skeleton-loading');
+          const splash = document.getElementById('app-splash-screen');
+          if (splash) splash.classList.add('dismissed');
+          animateEntrance();
+          isAppLoaded = true;
+          sessionStorage.setItem('gridline_session_active', 'true');
+        }, 950);
+      }
+    } else {
+      render();
+    }
+  });
+}
+
+// Trigger database sync initialization routine
+initializeCloudSync();
+
+  // --- LOGOUT AGENT ---
+  const logoutBtn = document.createElement('button');
+  logoutBtn.className = 'nav-btn ml-2';
+  logoutBtn.title = 'Logout from session';
+  logoutBtn.innerHTML = '<i class="ti ti-logout"></i>';
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem("habit_current_user");
+    window.location.href = "/";
+  });
+  document.getElementById('mainNav').appendChild(logoutBtn);
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered successfully!'))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    });
+  }
+</script>
+</body>
+</html>
