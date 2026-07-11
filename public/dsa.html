@@ -325,11 +325,14 @@ if (!currentUserId) {
   window.location.href = "/";
 }
 
-// Safely normalize identity tokens to block code engine execution failures
 const normalizedId = currentUserId ? currentUserId.trim().toLowerCase() : "";
-let currentUserProfile = { username: "Achiever" };
+let currentUserProfile = { username: "..." };
 
 function updateHeaderName(name) {
+  if (!name || name === "...") {
+    document.getElementById('profileIndicator').textContent = "DSA ROADMAP";
+    return;
+  }
   document.getElementById('profileIndicator').textContent = `${name.toUpperCase()} × DSA ROADMAP`;
 }
 updateHeaderName(currentUserProfile.username);

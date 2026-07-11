@@ -641,7 +641,7 @@
   const lenis = new Lenis({ autoRaf: true });
   gsap.registerPlugin(ScrollTrigger);
 
- // --- MULTI-USER AUTH ENGINE ---
+// --- MULTI-USER AUTH ENGINE ---
 const currentUserId = localStorage.getItem("habit_current_user");
 
 if (!currentUserId) {
@@ -650,15 +650,22 @@ if (!currentUserId) {
 
 // Normalize ID and establish baseline profile references
 const normalizedId = currentUserId ? currentUserId.trim().toLowerCase() : "";
-let currentUserProfile = { username: "Achiever" };
+
+// FIX: Initialize the fallback username as an empty string or a loading status indicator
+let currentUserProfile = { username: "..." };
 
 // Dynamic welcome string wrapper function
 function updateWelcomeHeader(nameString) {
+  // Prevent printing a raw dot or empty space while the network request is loading
+  if (!nameString || nameString === "...") {
+    document.getElementById('splashBrandLabel').textContent = "Gridline Loading...";
+    return;
+  }
   const firstName = nameString.trim().split(' ')[0];
   document.getElementById('splashBrandLabel').textContent = `Gridline × ${firstName}`;
 }
 
-// Set a safe initial layout fallback string
+// Set a safe initial layout loading string
 updateWelcomeHeader(currentUserProfile.username);
   let isAppLoaded = false;
   const isFirstLoadThisSession = !sessionStorage.getItem('gridline_session_active');
