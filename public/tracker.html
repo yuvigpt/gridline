@@ -1043,11 +1043,14 @@ async function initializeCloudSync() {
     const profileDocRef = doc(db, "habit_users", normalizedId);
     const profileSnapshot = await getDoc(profileDocRef);
     
-    if (profileSnapshot.exists()) {
-      currentUserProfile = profileSnapshot.data();
-      updateWelcomeHeader(currentUserProfile.username);
+if (profileSnapshot.exists()) {
+      const onlineProfileData = profileSnapshot.data();
+      currentUserProfile = onlineProfileData;
       
-      // FIX: Force the page layouts to re-render using the updated username string
+      // FIX: Pass the newly downloaded online username straight to the header modifier
+      updateWelcomeHeader(onlineProfileData.username);
+      
+      // Force the page layouts to re-render using the updated username string
       render(); 
     }
   } catch (error) {

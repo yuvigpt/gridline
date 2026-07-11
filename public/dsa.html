@@ -755,10 +755,11 @@ async function initializeDSASync() {
     const profileDocRef = doc(db, "habit_users", normalizedId);
     const profileSnapshot = await getDoc(profileDocRef);
     if (profileSnapshot.exists()) {
-      currentUserProfile = profileSnapshot.data();
+      const onlineProfileData = profileSnapshot.data();
+      currentUserProfile = onlineProfileData;
       
-      // FIX: Update the display indicator text explicitly here
-      updateHeaderName(currentUserProfile.username); 
+      // FIX: Update the display indicator text using the cloud profile string
+      updateHeaderName(onlineProfileData.username); 
     }
   } catch (e) {
     console.error("Profile sync failure:", e);
