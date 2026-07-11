@@ -1040,13 +1040,15 @@ updateWelcomeHeader(currentUserProfile.username);
 // --- ASYNC DATA ROUTER ENGINE ---
 async function initializeCloudSync() {
   try {
-    // 1. Fetch user identity data from the shared global collection path
     const profileDocRef = doc(db, "habit_users", normalizedId);
     const profileSnapshot = await getDoc(profileDocRef);
     
     if (profileSnapshot.exists()) {
       currentUserProfile = profileSnapshot.data();
       updateWelcomeHeader(currentUserProfile.username);
+      
+      // FIX: Force the page layouts to re-render using the updated username string
+      render(); 
     }
   } catch (error) {
     console.error("Failed to download profile identities from cluster:", error);

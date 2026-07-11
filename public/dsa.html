@@ -756,11 +756,15 @@ async function initializeDSASync() {
     const profileSnapshot = await getDoc(profileDocRef);
     if (profileSnapshot.exists()) {
       currentUserProfile = profileSnapshot.data();
-      updateHeaderName(currentUserProfile.username);
+      
+      // FIX: Update the display indicator text explicitly here
+      updateHeaderName(currentUserProfile.username); 
     }
   } catch (e) {
     console.error("Profile sync failure:", e);
   }
+
+  // onSnapshot block remains exactly the same below...
 
   onSnapshot(syncDocRef, (snapshot) => {
     document.body.classList.remove('skeleton-loading');
