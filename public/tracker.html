@@ -1167,6 +1167,7 @@ initializeCloudSync();
     });
   }
 </script>
+
 <!-- Blurred Backdrop Overlay -->
 <div id="todoDrawerOverlay" class="fixed inset-0 bg-black/0 backdrop-blur-none pointer-events-none transition-all duration-300 z-[999] flex justify-end overflow-hidden">
   
@@ -1178,14 +1179,13 @@ initializeCloudSync();
           <h3 id="todoYesterdayDateLabel" class="text-xl font-bold tracking-tight text-zinc-400">July 17, 2026</h3>
           <p id="todoYesterdayWeekdayLabel" class="text-xs text-zinc-600 uppercase tracking-widest mt-0.5">Yesterday</p>
         </div>
-        <!-- FIXED: Yesterday Close button transformed to square emerald theme -->
         <button id="todoYesterdayCloseBtn" class="text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-400/50 transition-all p-2 rounded-xl bg-emerald-950/30 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
           <i class="ti ti-chevron-right text-sm"></i>
         </button>
       </div>
       
       <!-- Yesterday Task List Frame -->
-      <div id="yesterdayList" class="flex-1 mt-6 overflow-y-auto space-y-2 pr-1 scrollbar-thin"></div>
+      <div id="yesterdayList" class="flex-1 mt-6 overflow-y-auto space-y-2 pr-1 scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
     </div>
   </div>
 
@@ -1216,8 +1216,8 @@ initializeCloudSync();
         </button>
       </div>
 
-      <!-- Main Task Stack Box Container -->
-      <div id="todayList" class="flex-1 mt-5 overflow-y-auto space-y-2 pr-0.5 scrollbar-thin"></div>
+      <!-- FIXED: Added explicit scrolling behaviors and hidden track attributes directly to container -->
+      <div id="todayList" class="flex-1 mt-5 overflow-y-auto space-y-2 pr-0.5 scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
     </div>
 
     <!-- PHYSICAL FLOATING GAP SPACER WINDOW (2% Volume) -->
@@ -1226,20 +1226,19 @@ initializeCloudSync();
     <!-- LOWER DISCRETE CARD: Input Terminal (25% Volume) -->
     <div id="todoInputPanel" class="h-[25%] w-full bg-zinc-950 border border-zinc-900 rounded-2xl flex flex-col justify-between p-4 translate-x-full transition-transform duration-300 ease-in-out shadow-[-20px_0_50px_rgba(0,0,0,0.9)] pointer-events-auto">
       
-      <!-- Top Row: Input (FIXED: Enlarged, bright white text styling) -->
+      <!-- Top Row: Input -->
       <div class="flex items-center gap-2 bg-black border border-zinc-900 rounded-xl px-4 py-3 focus-within:border-emerald-500/50 transition-all">
         <span class="text-emerald-400 text-sm font-mono font-bold">&gt;</span>
         <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-base font-bold text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-700">
       </div>
 
-      <!-- Bottom Row: Dual Control Actions Side-by-Side -->
+      <!-- Bottom Row: Actions -->
       <div class="grid grid-cols-2 gap-2 mt-2">
         <button id="todoGlobalModalBtn" class="w-full bg-zinc-900/40 opacity-40 border border-zinc-900 text-zinc-500 text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-not-allowed" disabled>
           <i class="ti ti-clock text-sm"></i>
           <span id="globalTimeIndicator">Set Reminder</span>
         </button>
         
-        <!-- FIXED: Add Task modified to slight greenish theme accent -->
         <button id="todoAddBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-[0.98] shadow-[0_0_20px_rgba(52,211,153,0.2)] relative overflow-visible">
           <span>Add Task</span>
           <i class="ti ti-plus font-bold"></i>
@@ -1302,7 +1301,6 @@ initializeCloudSync();
         </div>
       </div>
 
-      <!-- FIXED: Save parameters button set to high-end slight emerald color profile -->
       <button id="todoModalSaveBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all text-center shadow-[0_0_20px_rgba(52,211,153,0.15)] relative overflow-visible">
         Save Parameters
       </button>
@@ -1385,39 +1383,42 @@ initializeCloudSync();
     const notifySubText = document.getElementById('notifySubText');
     const globalTimeIndicator = document.getElementById('globalTimeIndicator');
 
-    // DYNAMIC VISUALS ENGINE: Spark green particle flame bursts from borders
-    function triggerGreenFlames(element) {
+    // UPGRADED VISUALS ENGINE: Clean 360-degree Ring Firework Particles Explosion
+    function triggerEmeraldFirework(element) {
       if (!element) return;
       const rect = element.getBoundingClientRect();
-      const count = 15;
+      // Find absolute node midpoint vectors
+      const centerX = rect.left + (rect.width / 2);
+      const centerY = rect.top + (rect.height / 2);
+      const particleCount = 24;
       
-      for(let i = 0; i < count; i++) {
-        const flame = document.createElement('div');
-        flame.style.position = 'fixed';
-        flame.style.width = Math.random() * 6 + 4 + 'px';
-        flame.style.height = Math.random() * 12 + 8 + 'px';
-        flame.style.background = `linear-gradient(to top, #059669, #34d399, #6ee7b7)`;
-        flame.style.borderRadius = '50% 50% 20% 20% / 60% 60% 40% 40%';
-        flame.style.filter = 'blur(1px)';
-        flame.style.boxShadow = '0 0 8px #34d399';
-        flame.style.zIndex = '99999';
-        flame.style.pointerEvents = 'none';
+      for(let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.width = Math.random() * 5 + 3 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.background = Math.random() > 0.4 ? '#34d399' : '#10b981';
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = '0 0 10px #34d399, 0 0 20px #059669';
+        particle.style.zIndex = '99999';
+        particle.style.pointerEvents = 'none';
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
 
-        // Stagger bursts along right and left horizontal profiles randomly
-        const leftSide = Math.random() > 0.5;
-        flame.style.left = leftSide ? (rect.left - 4) + 'px' : (rect.right - 2) + 'px';
-        flame.style.top = rect.top + (Math.random() * rect.height) + 'px';
+        document.body.appendChild(particle);
 
-        document.body.appendChild(flame);
+        // Calculate clean trigonometric radial speed loops
+        const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+        const distance = Math.random() * 60 + 50;
 
-        gsap.to(flame, {
-          x: leftSide ? -Math.random() * 30 - 10 : Math.random() * 30 + 10,
-          y: -Math.random() * 40 - 20,
+        gsap.to(particle, {
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance - (Math.random() * 20), // Slight float up
           opacity: 0,
-          scaleY: 0.2,
-          duration: Math.random() * 0.4 + 0.4,
-          ease: "power2.out",
-          onComplete: () => flame.remove()
+          scale: 0.1,
+          duration: Math.random() * 0.3 + 0.5,
+          ease: "power3.out",
+          onComplete: () => particle.remove()
         });
       }
     }
@@ -1471,8 +1472,13 @@ initializeCloudSync();
     modalMin.addEventListener('change', evaluateModalTogglePermissions);
 
     function openDrawer() {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
+      // FIXED: Physically clamp background layout shell down to prevent background scrolls
+      const rootWrap = document.getElementById('mainContentWrap');
+      if(rootWrap) {
+        rootWrap.style.position = 'fixed';
+        rootWrap.style.width = '100%';
+        rootWrap.style.overflow = 'hidden';
+      }
       
       overlay.classList.remove('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
       overlay.classList.add('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
@@ -1497,8 +1503,13 @@ initializeCloudSync();
     }
 
     function closeDrawer() {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
+      // FIXED: Release background shell positions back safely
+      const rootWrap = document.getElementById('mainContentWrap');
+      if(rootWrap) {
+        rootWrap.style.position = '';
+        rootWrap.style.width = '';
+        rootWrap.style.overflow = '';
+      }
       
       overlay.classList.add('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
       overlay.classList.remove('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
@@ -1555,8 +1566,7 @@ initializeCloudSync();
     globalModal.addEventListener('click', closeModal);
 
     document.getElementById('todoModalSaveBtn').addEventListener('click', (e) => {
-      // FIXED: Trigger flame emission animation on button position tracking
-      triggerGreenFlames(e.currentTarget);
+      triggerEmeraldFirework(e.currentTarget);
       
       const timeVal = parseTo24h(modalHour.value, modalMin.value, modalAmpm.value);
       const notifyVal = modalNotifyToggle.checked;
@@ -1667,9 +1677,8 @@ initializeCloudSync();
 
         item.querySelector('.todo-check-btn').addEventListener('click', (e) => {
           task.completed = !task.completed;
-          // FIXED: If item status flags true, ignite green flames tracking the wrapper row card bounds
           if(task.completed) {
-            triggerGreenFlames(item);
+            triggerEmeraldFirework(e.currentTarget);
           }
           save();
         });
@@ -1693,8 +1702,7 @@ initializeCloudSync();
       const val = taskInput.value.trim();
       if (!val) return;
 
-      // FIXED: Explode dynamic green side flame particles on submit button trigger location
-      triggerGreenFlames(document.getElementById('todoInputPanel'));
+      triggerEmeraldFirework(document.getElementById('todoAddBtn'));
 
       if (!tasksByDate[todayKey]) tasksByDate[todayKey] = [];
 
