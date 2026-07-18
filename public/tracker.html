@@ -16,6 +16,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+   
+
+
     :root {
       /* Dark Emerald & Mint Accent Palette */
       --accent: #34d399;
@@ -27,14 +30,41 @@
       --text-dim: #9db8ab;
       --radius: 24px;
     }
+/* Re-allow smooth scrolling natively across the entire site */
+    html {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      max-width: 100vw;
+    }
+
+    /* Force-hide scrollbar tracks globally without breaking scroll mechanics */
+    html, body, * {
+      -ms-overflow-style: none !important;  /* IE and Edge */
+      scrollbar-width: none !important;     /* Firefox */
+    }
+
+    html::-webkit-scrollbar, 
+    body::-webkit-scrollbar, 
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
 
     body {
       margin: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: #E2E8F0;
       background-color: var(--bg);
-      overflow-x: clip;
+      overflow-x: hidden;
       min-height: 100vh;
+    }
+    
+
+   /* NEW BLOCK RIGHT BELOW THE BODY BLOCK FOR CHROME & SAFARI */
+
+    body::-webkit-scrollbar {
+      display: none; /* Hide scrollbar completely */
     }
 
     /* Aurora Background */
@@ -482,7 +512,7 @@
 <div class="bg-mesh"></div>
 <div class="bg-overlay"></div>
 
-<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 sm:py-8 relative z-10 opacity-0" id="mainContentWrap">
+<div class="max-w-[1200px] mx-auto  px-4 sm:px-6 py-4 sm:py-8 relative z-10 opacity-0" id="mainContentWrap">
 
   <nav class="floating-nav" id="mainNav">
     <div class="nav-brand flex items-center px-4 gap-3 border-r border-white/10 mr-2">
@@ -499,9 +529,11 @@
       <span class="text-xs font-mono min-w-[130px] text-center" id="monthLabel"></span>
       <button class="nav-btn" id="nextMonth"><i class="ti ti-chevron-right"></i></button>
     </div>
-    <a href="dsa.html" class="nav-item ml-4">
-      <i class="ti ti-bolt"></i> DSA TRACKER
-    </a>
+    <a href="#" id="todo-drawer-trigger" class="nav-item ml-4">
+  <i class="ti ti-list-check"></i> TO-DO LIST
+</a>
+    
+  
   </nav>
 
   <div class="flex flex-col gap-4 md:gap-6">
@@ -635,6 +667,7 @@
 <script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
 
 <script type="module">
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -1134,5 +1167,534 @@ initializeCloudSync();
     });
   }
 </script>
+<!-- Blurred Backdrop Overlay -->
+<div id="todoDrawerOverlay" class="fixed inset-0 bg-black/0 backdrop-blur-none pointer-events-none transition-all duration-300 z-[999] flex justify-end overflow-hidden">
+  
+  <!-- ==================== YESTERDAY'S SLIDING PANEL (LEFT PANEL) ==================== -->
+  <div id="todoYesterdayPanel" class="w-96 max-w-full h-full bg-zinc-950 border-r border-zinc-900 flex flex-col fixed top-0 right-0 translate-x-full transition-all duration-500 ease-in-out font-sans text-white overflow-hidden z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+    <div class="h-full flex flex-col p-6 overflow-hidden">
+      <div class="flex justify-between items-center border-b border-zinc-900 pb-4">
+        <div>
+          <h3 id="todoYesterdayDateLabel" class="text-xl font-bold tracking-tight text-zinc-400">July 17, 2026</h3>
+          <p id="todoYesterdayWeekdayLabel" class="text-xs text-zinc-600 uppercase tracking-widest mt-0.5">Yesterday</p>
+        </div>
+        <button id="todoYesterdayCloseBtn" class="text-zinc-500 hover:text-red-400 border border-zinc-800 hover:border-red-500/30 transition-all p-2 rounded-xl bg-black">
+          <i class="ti ti-chevron-right text-sm"></i>
+        </button>
+      </div>
+      
+      <!-- Yesterday Task List Frame -->
+      <div id="yesterdayList" class="flex-1 mt-6 overflow-y-auto space-y-2 pr-1 scrollbar-thin"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN CONTAINER CONTAINER (RIGHT PANEL TREE) ==================== -->
+  <div id="todoDrawerContainer" class="w-96 max-w-full h-full flex flex-col p-3 font-sans text-white relative z-20 pointer-events-none transition-all duration-300">
+    
+    <!-- UPPER DISCRETE CARD: Task Stack Viewer (73% Volume) -->
+    <div id="todoDrawerPanel" class="h-[73%] w-full bg-black border border-emerald-500/20 rounded-2xl flex flex-col p-5 overflow-hidden translate-x-full transition-transform duration-300 ease-in-out shadow-[-20px_0_50px_rgba(0,0,0,0.9),0_0_30px_rgba(52,211,153,0.03)] pointer-events-auto">
+      <div class="flex justify-between items-end shrink-0">
+        <p id="todoProgressText" class="text-xs font-medium tracking-tight text-zinc-500">0 of 0 completed</p>
+        <button id="todoCloseBtn" class="text-zinc-500 hover:text-white transition-colors">
+          <i class="ti ti-x text-base"></i>
+        </button>
+      </div>
+      
+      <div class="mt-2 h-1 w-full bg-zinc-900 rounded-full overflow-hidden shrink-0">
+        <div id="todoProgressBar" class="h-full bg-emerald-400 w-0 transition-all duration-500 rounded-full"></div>
+      </div>
+
+      <!-- Header Area -->
+      <div class="mt-5 flex items-start justify-between gap-4 shrink-0">
+        <div>
+          <h2 id="todoDateLabel" class="text-xl font-bold tracking-tight text-white">July 18, 2026</h2>
+          <p id="todoWeekdayLabel" class="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Today</p>
+        </div>
+        <button id="triggerYesterdayPanel" class="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-zinc-400 border border-zinc-800 bg-zinc-950 rounded-xl transition-all duration-200 hover:text-emerald-400 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(52,211,153,0.1)]">
+          <i class="ti ti-history text-xs"></i> YESTERDAY
+        </button>
+      </div>
+
+      <!-- Main Task Stack Box Container -->
+      <div id="todayList" class="flex-1 mt-5 overflow-y-auto space-y-2 pr-0.5 scrollbar-thin"></div>
+    </div>
+
+    <!-- PHYSICAL FLOATING GAP SPACER WINDOW (2% Volume) -->
+    <div class="h-[2%] w-full shrink-0"></div>
+
+    <!-- LOWER DISCRETE CARD: Input Terminal (25% Volume) -->
+    <div id="todoInputPanel" class="h-[25%] w-full bg-zinc-950 border border-zinc-900 rounded-2xl flex flex-col justify-between p-4 translate-x-full transition-transform duration-300 ease-in-out shadow-[-20px_0_50px_rgba(0,0,0,0.9)] pointer-events-auto">
+      
+      <!-- Top Row: Input -->
+      <div class="flex items-center gap-2 bg-black border border-zinc-900 rounded-xl px-4 py-3 focus-within:border-emerald-500/50 transition-all">
+        <span class="text-zinc-500 text-sm font-mono">&gt;</span>
+        <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-sm text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-800">
+      </div>
+
+      <!-- Bottom Row: Dual Control Actions Side-by-Side -->
+      <div class="grid grid-cols-2 gap-2 mt-2">
+        <button id="todoGlobalModalBtn" class="w-full bg-zinc-900/40 opacity-40 border border-zinc-900 text-zinc-500 text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-not-allowed" disabled>
+          <i class="ti ti-clock text-sm"></i>
+          <span id="globalTimeIndicator">Set Reminder</span>
+        </button>
+        
+        <button id="todoAddBtn" class="w-full bg-white hover:bg-zinc-200 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-[0.98]">
+          <span>Add Task</span>
+          <i class="ti ti-plus font-bold"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== PREMIUM CENTER-SCREEN REMINDER MODAL ==================== -->
+  <div id="todoGlobalModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[1000] hidden items-center justify-center p-4 transition-all duration-300 animate-[fadeIn_0.2s_ease-out]">
+    <div class="w-full max-w-sm bg-zinc-950 border border-zinc-850 rounded-2xl p-6 shadow-2xl relative flex flex-col gap-5 text-white" onclick="event.stopPropagation()">
+      
+      <div class="flex justify-between items-center border-b border-zinc-900 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="ti ti-alarm text-emerald-400 text-lg"></i>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-200">Configure Scheduler</h3>
+        </div>
+        <button id="todoModalCloseBtn" class="text-zinc-500 hover:text-white transition-colors p-1"><i class="ti ti-x text-base"></i></button>
+      </div>
+
+      <!-- Input Configuration Forms -->
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Select Target Time (12H Format)</label>
+          
+          <div class="grid grid-cols-3 gap-2 mt-1">
+            <select id="todoModalHour" class="bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/40 cursor-pointer">
+              <option value="">HH</option>
+              <option value="01">01</option><option value="02">02</option><option value="03">03</option>
+              <option value="04">04</option><option value="05">05</option><option value="06">06</option>
+              <option value="07">07</option><option value="08">08</option><option value="09">09</option>
+              <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+            </select>
+            
+            <select id="todoModalMin" class="bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/40 cursor-pointer">
+              <option value="">MM</option>
+              <option value="00">00</option><option value="05">05</option><option value="10">10</option>
+              <option value="15">15</option><option value="20">20</option><option value="25">25</option>
+              <option value="30">30</option><option value="35">35</option><option value="40">40</option>
+              <option value="45">45</option><option value="50">50</option><option value="55">55</option>
+            </select>
+
+            <select id="todoModalAmpm" class="bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/40 cursor-pointer">
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="todoNotifyContainer" class="flex items-center justify-between bg-black border border-zinc-900 rounded-xl px-4 py-3.5 mt-2 opacity-40 cursor-not-allowed">
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-zinc-400" id="notifyTitleText">Push Notifications</span>
+            <span class="text-[10px] text-zinc-600 font-mono mt-0.5" id="notifySubText">Requires time setting</span>
+          </div>
+          <label class="relative inline-flex items-center" id="todoToggleLabel" style="pointer-events: none;">
+            <input id="todoModalNotifyToggle" type="checkbox" class="sr-only peer">
+            <div class="w-10 h-6 bg-zinc-900 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-600 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-black"></div>
+          </label>
+        </div>
+      </div>
+
+      <button id="todoModalSaveBtn" class="w-full bg-white hover:bg-zinc-200 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all text-center">
+        Save Parameters
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    const STORAGE_KEY = 'gridline-todo-drawer-v1';
+    let tasksByDate = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    let editingTaskId = null;
+    
+    let globalSelectedTime = "";
+    let globalNotifyEnabled = false;
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const todayKey = dateKey(today);
+    const yesterdayKey = dateKey(yesterday);
+
+    const formatDisplayDate = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const formatWeekday = (d) => d.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    const formatTime12h = (time) => {
+      if (!time) return '';
+      const [h, m] = time.split(':').map(Number);
+      return `${String(h % 12 === 0 ? 12 : h % 12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+    };
+
+    function parseTo24h(hour, min, ampm) {
+      if (!hour || !min) return "";
+      let h = Number(hour);
+      if (ampm === "PM" && h < 12) h += 12;
+      if (ampm === "AM" && h === 12) h = 0;
+      return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+    }
+
+    function unpack24h(timeStr) {
+      if (!timeStr) return { hour: "", min: "", ampm: "AM" };
+      const [hStr, mStr] = timeStr.split(':');
+      let h = Number(hStr);
+      let ampm = h >= 12 ? "PM" : "AM";
+      let displayH = h % 12;
+      if (displayH === 0) displayH = 12;
+      return { hour: String(displayH).padStart(2, '0'), min: mStr, ampm: ampm };
+    }
+
+    // DOM Target Elements
+    const overlay = document.getElementById('todoDrawerOverlay');
+    const mainContainer = document.getElementById('todoDrawerContainer');
+    const mainPanel = document.getElementById('todoDrawerPanel');
+    const inputPanel = document.getElementById('todoInputPanel');
+    const yesterdayPanel = document.getElementById('todoYesterdayPanel');
+    const todayListContainer = document.getElementById('todayList');
+    const yesterdayListContainer = document.getElementById('yesterdayList');
+    const progressText = document.getElementById('todoProgressText');
+    const progressBar = document.getElementById('todoProgressBar');
+    
+    const dateLabel = document.getElementById('todoDateLabel');
+    const weekdayLabel = document.getElementById('todoWeekdayLabel');
+    const yDateLabel = document.getElementById('todoYesterdayDateLabel');
+    const yWeekdayLabel = document.getElementById('todoYesterdayWeekdayLabel');
+    
+    const taskInput = document.getElementById('todoTaskInput');
+    const globalModalBtn = document.getElementById('todoGlobalModalBtn');
+    const globalModal = document.getElementById('todoGlobalModal');
+    
+    const modalHour = document.getElementById('todoModalHour');
+    const modalMin = document.getElementById('todoModalMin');
+    const modalAmpm = document.getElementById('todoModalAmpm');
+    const modalNotifyToggle = document.getElementById('todoModalNotifyToggle');
+    const notifyContainer = document.getElementById('todoNotifyContainer');
+    const todoToggleLabel = document.getElementById('todoToggleLabel');
+    const notifyTitleText = document.getElementById('notifyTitleText');
+    const notifySubText = document.getElementById('notifySubText');
+    const globalTimeIndicator = document.getElementById('globalTimeIndicator');
+
+    window.addEventListener('load', () => {
+      const trigger = document.getElementById('todo-drawer-trigger');
+      if (trigger) {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          openDrawer();
+        });
+      }
+    });
+
+    taskInput.addEventListener('input', () => {
+      const hasContent = taskInput.value.trim().length > 0;
+      if (hasContent) {
+        globalModalBtn.disabled = false;
+        globalModalBtn.classList.remove('opacity-40', 'bg-zinc-900/40', 'text-zinc-500', 'cursor-not-allowed');
+        globalModalBtn.classList.add('bg-zinc-900', 'hover:bg-zinc-850', 'text-zinc-300', 'cursor-pointer');
+      } else {
+        globalModalBtn.disabled = true;
+        globalModalBtn.classList.add('opacity-40', 'bg-zinc-900/40', 'text-zinc-500', 'cursor-not-allowed');
+        globalModalBtn.classList.remove('bg-zinc-900', 'hover:bg-zinc-850', 'text-zinc-300', 'cursor-pointer');
+      }
+    });
+
+    function evaluateModalTogglePermissions() {
+      const timeIsSet = modalHour.value !== "" && modalMin.value !== "";
+      if (timeIsSet) {
+        notifyContainer.classList.remove('opacity-40', 'cursor-not-allowed');
+        notifyContainer.classList.add('hover:border-zinc-800');
+        todoToggleLabel.style.pointerEvents = "auto";
+        notifyTitleText.classList.remove('text-zinc-400');
+        notifyTitleText.classList.add('text-zinc-200');
+        notifySubText.textContent = "Desktop Alert Service";
+        notifySubText.className = "text-[10px] text-zinc-500 font-mono mt-0.5";
+      } else {
+        modalNotifyToggle.checked = false;
+        notifyContainer.classList.add('opacity-40', 'cursor-not-allowed');
+        notifyContainer.classList.remove('hover:border-zinc-800');
+        todoToggleLabel.style.pointerEvents = "none";
+        notifyTitleText.classList.add('text-zinc-400');
+        notifyTitleText.classList.remove('text-zinc-200');
+        notifySubText.textContent = "Disabled: Set time first";
+        notifySubText.className = "text-[10px] text-red-500/60 font-mono mt-0.5";
+      }
+    }
+
+    modalHour.addEventListener('change', evaluateModalTogglePermissions);
+    modalMin.addEventListener('change', evaluateModalTogglePermissions);
+
+    function openDrawer() {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      
+      overlay.classList.remove('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
+      overlay.classList.add('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
+      
+      mainContainer.classList.remove('pointer-events-none');
+      mainPanel.classList.remove('translate-x-full');
+      mainPanel.classList.add('translate-x-0');
+      inputPanel.classList.remove('translate-x-full');
+      inputPanel.classList.add('translate-x-0');
+      
+      dateLabel.textContent = formatDisplayDate(today);
+      weekdayLabel.textContent = formatWeekday(today);
+      yDateLabel.textContent = formatDisplayDate(yesterday);
+      yWeekdayLabel.textContent = formatWeekday(yesterday);
+      
+      taskInput.value = '';
+      globalModalBtn.disabled = true;
+      globalModalBtn.className = "w-full bg-zinc-900/40 opacity-40 border border-zinc-900 text-zinc-500 text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-not-allowed";
+      
+      editingTaskId = null;
+      renderLists();
+    }
+
+    function closeDrawer() {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      
+      overlay.classList.add('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
+      overlay.classList.remove('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
+      
+      mainContainer.classList.add('pointer-events-none');
+      mainPanel.classList.add('translate-x-full');
+      mainPanel.classList.remove('translate-x-0');
+      inputPanel.classList.add('translate-x-full');
+      inputPanel.classList.remove('translate-x-0');
+      
+      closeYesterdayPanel();
+      closeModal();
+    }
+
+    function openModal(taskId = null) {
+      editingTaskId = taskId;
+      let activeTime = "";
+      let activeReminder = false;
+
+      if (taskId) {
+        const targetList = tasksByDate[todayKey] || [];
+        const currentTask = targetList.find(t => t.id === taskId);
+        if (currentTask) {
+          activeTime = currentTask.time || "";
+          activeReminder = currentTask.reminder || false;
+        }
+      } else {
+        activeTime = globalSelectedTime;
+        activeReminder = globalNotifyEnabled;
+      }
+
+      const data = unpack24h(activeTime);
+      modalHour.value = data.hour;
+      modalMin.value = data.min;
+      modalAmpm.value = data.ampm;
+      modalNotifyToggle.checked = activeReminder;
+
+      evaluateModalTogglePermissions();
+
+      globalModal.classList.remove('hidden');
+      globalModal.classList.add('flex');
+    }
+
+    function closeModal() {
+      globalModal.classList.add('hidden');
+      globalModal.classList.remove('flex');
+      editingTaskId = null;
+    }
+
+    globalModalBtn.addEventListener('click', () => {
+      if (!globalModalBtn.disabled) openModal(null);
+    });
+    document.getElementById('todoModalCloseBtn').addEventListener('click', closeModal);
+    globalModal.addEventListener('click', closeModal);
+
+    document.getElementById('todoModalSaveBtn').addEventListener('click', () => {
+      const timeVal = parseTo24h(modalHour.value, modalMin.value, modalAmpm.value);
+      const notifyVal = modalNotifyToggle.checked;
+
+      if (notifyVal && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+
+      if (editingTaskId) {
+        if (tasksByDate[todayKey]) {
+          tasksByDate[todayKey] = tasksByDate[todayKey].map(t => {
+            if (t.id === editingTaskId) {
+              return { ...t, time: timeVal, reminder: notifyVal && !!timeVal };
+            }
+            return t;
+          });
+          save();
+        }
+      } else {
+        globalSelectedTime = timeVal;
+        globalNotifyEnabled = notifyVal && !!timeVal;
+        globalTimeIndicator.textContent = timeVal ? formatTime12h(timeVal) : "Set Reminder";
+      }
+      closeModal();
+    });
+
+    document.getElementById('triggerYesterdayPanel').addEventListener('click', () => {
+      if (yesterdayPanel.classList.contains('translate-x-full')) {
+        yesterdayPanel.classList.remove('translate-x-full');
+        yesterdayPanel.classList.add('right-[400px]');
+      } else {
+        closeYesterdayPanel();
+      }
+    });
+
+    function closeYesterdayPanel() {
+      yesterdayPanel.classList.add('translate-x-full');
+      yesterdayPanel.classList.remove('right-[400px]');
+    }
+
+    document.getElementById('todoYesterdayCloseBtn').addEventListener('click', closeYesterdayPanel);
+    //overlay.addEventListener('click', closeDrawer);
+    document.getElementById('todoCloseBtn').addEventListener('click', closeDrawer);
+    
+    mainPanel.addEventListener('click', (e) => e.stopPropagation());
+    inputPanel.addEventListener('click', (e) => e.stopPropagation());
+    yesterdayPanel.addEventListener('click', (e) => e.stopPropagation());
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!globalModal.classList.contains('hidden')) closeModal();
+        else if (mainPanel.classList.contains('translate-x-0')) closeDrawer();
+      }
+    });
+
+    function renderLists() {
+      const tList = tasksByDate[todayKey] || [];
+      const yList = tasksByDate[yesterdayKey] || [];
+
+      const completed = tList.filter(t => t.completed).length;
+      progressText.textContent = `${completed} of ${tList.length} completed`;
+      progressBar.style.width = tList.length ? `${(completed / tList.length) * 100}%` : '0%';
+
+      buildHTMLStack(tList, todayListContainer, todayKey, true);
+      buildHTMLStack(yList, yesterdayListContainer, yesterdayKey, false);
+    }
+
+    function buildHTMLStack(list, container, targetKey, allowTimeEdits) {
+      container.innerHTML = '';
+      
+      const sorted = [...list].sort((a, b) => {
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        if (!a.time && !b.time) return 0;
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
+      });
+
+      if (!sorted.length) {
+        container.innerHTML = `<div class="text-center text-xs font-mono text-zinc-700 py-12 border border-dashed border-zinc-900 rounded-2xl">[ No tasks logged ]</div>`;
+        return;
+      }
+
+      sorted.forEach(task => {
+        const item = document.createElement('div');
+        item.className = "flex flex-col w-full bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden transition-all duration-200 mb-2 hover:border-zinc-800";
+        
+        item.innerHTML = `
+          <div class="flex items-center gap-3 px-4 py-3 group">
+            <button class="todo-check-btn w-5 h-5 rounded border-2 transition-all flex items-center justify-center shrink-0 ${task.completed ? 'bg-emerald-400 border-emerald-400 text-black' : 'border-zinc-700 hover:border-zinc-500'}">
+              ${task.completed ? '<i class="ti ti-check font-bold text-xs"></i>' : ''}
+            </button>
+            <span class="text-sm flex-1 truncate ${task.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}">${task.text}</span>
+            
+            ${allowTimeEdits ? `
+              <button class="todo-inline-modal-trigger flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg border transition-all ${task.time ? 'text-zinc-400 border-zinc-800 hover:text-emerald-400 hover:border-emerald-500/20 bg-black' : 'text-zinc-600 border-dashed border-zinc-900 hover:text-zinc-300 bg-transparent'}">
+                <i class="${task.time ? (task.reminder ? 'ti ti-bell text-emerald-400' : 'ti ti-clock') : 'ti ti-plus'}"></i>
+                <span>${task.time ? formatTime12h(task.time) : 'ADD TIME'}</span>
+              </button>
+            ` : (task.time ? `
+              <span class="flex items-center gap-1 text-xs text-zinc-600 font-mono shrink-0"><i class="ti ti-clock"></i> ${formatTime12h(task.time)}</span>
+            ` : '')}
+
+            <button class="todo-del-btn text-zinc-800 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 shrink-0">
+              <i class="ti ti-trash text-sm"></i>
+            </button>
+          </div>
+        `;
+
+        item.querySelector('.todo-check-btn').addEventListener('click', () => {
+          task.completed = !task.completed;
+          save();
+        });
+
+        item.querySelector('.todo-del-btn').addEventListener('click', () => {
+          tasksByDate[targetKey] = tasksByDate[targetKey].filter(t => t.id !== task.id);
+          save();
+        });
+
+        if (allowTimeEdits) {
+          item.querySelector('.todo-inline-modal-trigger').addEventListener('click', () => {
+            openModal(task.id);
+          });
+        }
+
+        container.appendChild(item);
+      });
+    }
+
+    function addTask() {
+      const val = taskInput.value.trim();
+      if (!val) return;
+
+      if (!tasksByDate[todayKey]) tasksByDate[todayKey] = [];
+
+      tasksByDate[todayKey].push({
+        id: Date.now() + Math.random().toString(36).slice(2, 5),
+        text: val.toUpperCase(),
+        time: globalSelectedTime,
+        reminder: globalNotifyEnabled && !!globalSelectedTime,
+        completed: false
+      });
+
+      taskInput.value = '';
+      globalSelectedTime = "";
+      globalNotifyEnabled = false;
+      globalTimeIndicator.textContent = "Set Reminder";
+      
+      globalModalBtn.disabled = true;
+      globalModalBtn.className = "w-full bg-zinc-900/40 opacity-40 border border-zinc-900 text-zinc-500 text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-not-allowed";
+      
+      save();
+    }
+
+    document.getElementById('todoAddBtn').addEventListener('click', addTask);
+    taskInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasksByDate));
+      renderLists();
+    }
+
+    const notifiedCache = new Set();
+    setInterval(() => {
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const currentList = tasksByDate[dateKey(now)] || [];
+      
+      currentList.forEach(t => {
+        if (t.reminder && !t.completed && t.time && t.time <= timeStr && !notifiedCache.has(t.id)) {
+          notifiedCache.add(t.id);
+          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            new Notification('Task Reminder', { body: `${t.text} — ${formatTime12h(t.time)}` });
+          }
+        }
+      });
+    }, 30000);
+
+  })();
+</script>
+</body>
+</html>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gridline-v2';
+const CACHE_NAME = 'gridline-v3';
 const ASSETS = [
   '/',
   '/tracker.html',
