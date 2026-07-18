@@ -1195,8 +1195,9 @@ initializeCloudSync();
       </div>
       
       <!-- Yesterday Task List Frame -->
-      <div id="yesterdayList" class="flex-1 mt-6 overflow-y-auto space-y-2 pr-1 scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
-    </div>
+      <!-- Update this line -->
+<div id="yesterdayList" data-lenis-prevent class="flex-1 mt-6 overflow-y-auto space-y-2 pr-1 scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
+</div>
   </div>
 
   <!-- ==================== MAIN CONTAINER CONTAINER (RIGHT PANEL TREE) ==================== -->
@@ -1228,7 +1229,8 @@ initializeCloudSync();
 
       <!-- FIXED: Added explicit scrolling behaviors and hidden track attributes directly to container -->
       <!-- REPLACE WITH THIS: -->
-<div id="todayList" class="flex-1 mt-5 overflow-y-auto overflow-x-hidden space-y-2 pr-1" style="scrollbar-width: none; -ms-overflow-style: none; webkit-overflow-scrolling: touch;"></div>
+<!-- Update this line -->
+<div id="todayList" data-lenis-prevent class="flex-1 mt-5 overflow-y-auto overflow-x-hidden space-y-2 pr-1" style="scrollbar-width: none; -ms-overflow-style: none; webkit-overflow-scrolling: touch;"></div>
     </div>
     <!-- PHYSICAL FLOATING GAP SPACER WINDOW (2% Volume) -->
     <div class="h-[2%] w-full shrink-0"></div>
