@@ -1178,7 +1178,8 @@ initializeCloudSync();
           <h3 id="todoYesterdayDateLabel" class="text-xl font-bold tracking-tight text-zinc-400">July 17, 2026</h3>
           <p id="todoYesterdayWeekdayLabel" class="text-xs text-zinc-600 uppercase tracking-widest mt-0.5">Yesterday</p>
         </div>
-        <button id="todoYesterdayCloseBtn" class="text-zinc-500 hover:text-red-400 border border-zinc-800 hover:border-red-500/30 transition-all p-2 rounded-xl bg-black">
+        <!-- FIXED: Yesterday Close button transformed to square emerald theme -->
+        <button id="todoYesterdayCloseBtn" class="text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-400/50 transition-all p-2 rounded-xl bg-emerald-950/30 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
           <i class="ti ti-chevron-right text-sm"></i>
         </button>
       </div>
@@ -1225,10 +1226,10 @@ initializeCloudSync();
     <!-- LOWER DISCRETE CARD: Input Terminal (25% Volume) -->
     <div id="todoInputPanel" class="h-[25%] w-full bg-zinc-950 border border-zinc-900 rounded-2xl flex flex-col justify-between p-4 translate-x-full transition-transform duration-300 ease-in-out shadow-[-20px_0_50px_rgba(0,0,0,0.9)] pointer-events-auto">
       
-      <!-- Top Row: Input -->
+      <!-- Top Row: Input (FIXED: Enlarged, bright white text styling) -->
       <div class="flex items-center gap-2 bg-black border border-zinc-900 rounded-xl px-4 py-3 focus-within:border-emerald-500/50 transition-all">
-        <span class="text-zinc-500 text-sm font-mono">&gt;</span>
-        <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-sm text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-800">
+        <span class="text-emerald-400 text-sm font-mono font-bold">&gt;</span>
+        <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-base font-bold text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-700">
       </div>
 
       <!-- Bottom Row: Dual Control Actions Side-by-Side -->
@@ -1238,7 +1239,8 @@ initializeCloudSync();
           <span id="globalTimeIndicator">Set Reminder</span>
         </button>
         
-        <button id="todoAddBtn" class="w-full bg-white hover:bg-zinc-200 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-[0.98]">
+        <!-- FIXED: Add Task modified to slight greenish theme accent -->
+        <button id="todoAddBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-[0.98] shadow-[0_0_20px_rgba(52,211,153,0.2)] relative overflow-visible">
           <span>Add Task</span>
           <i class="ti ti-plus font-bold"></i>
         </button>
@@ -1300,7 +1302,8 @@ initializeCloudSync();
         </div>
       </div>
 
-      <button id="todoModalSaveBtn" class="w-full bg-white hover:bg-zinc-200 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all text-center">
+      <!-- FIXED: Save parameters button set to high-end slight emerald color profile -->
+      <button id="todoModalSaveBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-3.5 rounded-xl uppercase tracking-wider transition-all text-center shadow-[0_0_20px_rgba(52,211,153,0.15)] relative overflow-visible">
         Save Parameters
       </button>
     </div>
@@ -1314,7 +1317,7 @@ initializeCloudSync();
     let tasksByDate = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     let editingTaskId = null;
     
-    let globalSelectedTime = "";
+    let globalSelectedTime = ""; 
     let globalNotifyEnabled = false;
 
     const today = new Date();
@@ -1381,6 +1384,43 @@ initializeCloudSync();
     const notifyTitleText = document.getElementById('notifyTitleText');
     const notifySubText = document.getElementById('notifySubText');
     const globalTimeIndicator = document.getElementById('globalTimeIndicator');
+
+    // DYNAMIC VISUALS ENGINE: Spark green particle flame bursts from borders
+    function triggerGreenFlames(element) {
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const count = 15;
+      
+      for(let i = 0; i < count; i++) {
+        const flame = document.createElement('div');
+        flame.style.position = 'fixed';
+        flame.style.width = Math.random() * 6 + 4 + 'px';
+        flame.style.height = Math.random() * 12 + 8 + 'px';
+        flame.style.background = `linear-gradient(to top, #059669, #34d399, #6ee7b7)`;
+        flame.style.borderRadius = '50% 50% 20% 20% / 60% 60% 40% 40%';
+        flame.style.filter = 'blur(1px)';
+        flame.style.boxShadow = '0 0 8px #34d399';
+        flame.style.zIndex = '99999';
+        flame.style.pointerEvents = 'none';
+
+        // Stagger bursts along right and left horizontal profiles randomly
+        const leftSide = Math.random() > 0.5;
+        flame.style.left = leftSide ? (rect.left - 4) + 'px' : (rect.right - 2) + 'px';
+        flame.style.top = rect.top + (Math.random() * rect.height) + 'px';
+
+        document.body.appendChild(flame);
+
+        gsap.to(flame, {
+          x: leftSide ? -Math.random() * 30 - 10 : Math.random() * 30 + 10,
+          y: -Math.random() * 40 - 20,
+          opacity: 0,
+          scaleY: 0.2,
+          duration: Math.random() * 0.4 + 0.4,
+          ease: "power2.out",
+          onComplete: () => flame.remove()
+        });
+      }
+    }
 
     window.addEventListener('load', () => {
       const trigger = document.getElementById('todo-drawer-trigger');
@@ -1514,7 +1554,10 @@ initializeCloudSync();
     document.getElementById('todoModalCloseBtn').addEventListener('click', closeModal);
     globalModal.addEventListener('click', closeModal);
 
-    document.getElementById('todoModalSaveBtn').addEventListener('click', () => {
+    document.getElementById('todoModalSaveBtn').addEventListener('click', (e) => {
+      // FIXED: Trigger flame emission animation on button position tracking
+      triggerGreenFlames(e.currentTarget);
+      
       const timeVal = parseTo24h(modalHour.value, modalMin.value, modalAmpm.value);
       const notifyVal = modalNotifyToggle.checked;
 
@@ -1537,7 +1580,7 @@ initializeCloudSync();
         globalNotifyEnabled = notifyVal && !!timeVal;
         globalTimeIndicator.textContent = timeVal ? formatTime12h(timeVal) : "Set Reminder";
       }
-      closeModal();
+      setTimeout(closeModal, 250);
     });
 
     document.getElementById('triggerYesterdayPanel').addEventListener('click', () => {
@@ -1555,7 +1598,6 @@ initializeCloudSync();
     }
 
     document.getElementById('todoYesterdayCloseBtn').addEventListener('click', closeYesterdayPanel);
-    //overlay.addEventListener('click', closeDrawer);
     document.getElementById('todoCloseBtn').addEventListener('click', closeDrawer);
     
     mainPanel.addEventListener('click', (e) => e.stopPropagation());
@@ -1599,7 +1641,7 @@ initializeCloudSync();
 
       sorted.forEach(task => {
         const item = document.createElement('div');
-        item.className = "flex flex-col w-full bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden transition-all duration-200 mb-2 hover:border-zinc-800";
+        item.className = "flex flex-col w-full bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden transition-all duration-200 mb-2 hover:border-zinc-800 relative";
         
         item.innerHTML = `
           <div class="flex items-center gap-3 px-4 py-3 group">
@@ -1623,8 +1665,12 @@ initializeCloudSync();
           </div>
         `;
 
-        item.querySelector('.todo-check-btn').addEventListener('click', () => {
+        item.querySelector('.todo-check-btn').addEventListener('click', (e) => {
           task.completed = !task.completed;
+          // FIXED: If item status flags true, ignite green flames tracking the wrapper row card bounds
+          if(task.completed) {
+            triggerGreenFlames(item);
+          }
           save();
         });
 
@@ -1643,9 +1689,12 @@ initializeCloudSync();
       });
     }
 
-    function addTask() {
+    function addTask(e) {
       const val = taskInput.value.trim();
       if (!val) return;
+
+      // FIXED: Explode dynamic green side flame particles on submit button trigger location
+      triggerGreenFlames(document.getElementById('todoInputPanel'));
 
       if (!tasksByDate[todayKey]) tasksByDate[todayKey] = [];
 
@@ -1669,7 +1718,7 @@ initializeCloudSync();
     }
 
     document.getElementById('todoAddBtn').addEventListener('click', addTask);
-    taskInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+    taskInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(e); });
 
     function save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasksByDate));
@@ -1694,7 +1743,5 @@ initializeCloudSync();
 
   })();
 </script>
-</body>
-</html>
 </body>
 </html>
