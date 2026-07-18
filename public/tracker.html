@@ -30,6 +30,16 @@
       --text-dim: #9db8ab;
       --radius: 24px;
     }
+
+     /* Explicitly force the inner container elements to accept scrolling inputs */
+    #todayList, #yesterdayList {
+      overflow-y: auto !important;
+      scrollbar-width: none !important;
+    }
+    #todayList::-webkit-scrollbar, #yesterdayList::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+    }
 /* Re-allow smooth scrolling natively across the entire site */
     html {
       overflow-y: auto !important;
@@ -1217,9 +1227,9 @@ initializeCloudSync();
       </div>
 
       <!-- FIXED: Added explicit scrolling behaviors and hidden track attributes directly to container -->
-      <div id="todayList" class="flex-1 mt-5 overflow-y-auto space-y-2 pr-0.5 scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
+      <!-- REPLACE WITH THIS: -->
+<div id="todayList" class="flex-1 mt-5 overflow-y-auto overflow-x-hidden space-y-2 pr-1" style="scrollbar-width: none; -ms-overflow-style: none; webkit-overflow-scrolling: touch;"></div>
     </div>
-
     <!-- PHYSICAL FLOATING GAP SPACER WINDOW (2% Volume) -->
     <div class="h-[2%] w-full shrink-0"></div>
 
@@ -1310,6 +1320,7 @@ initializeCloudSync();
 </div>
 
 <script>
+ 
   (function() {
     const STORAGE_KEY = 'gridline-todo-drawer-v1';
     let tasksByDate = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
