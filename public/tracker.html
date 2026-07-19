@@ -501,17 +501,18 @@
     tr:hover .row-del { opacity: 1; }
 
 
-    /* Vertical Dropdown Navigation Menu Wrapper */
 #menuDropdownContainer {
   width: 100%;
-  max-width: 340px; /* Clamps width cleanly */
-  background: rgba(9, 14, 11, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 340px; 
+  /* Glassmorphism Makeover rules */
+  background: rgba(4, 12, 8, 0.65) !important;
+  backdrop-filter: blur(25px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  
   border-radius: 20px;
   position: absolute;
-  top: calc(100% + 12px); /* Spaced cleanly right below nav bar */
+  top: calc(100% + 12px); 
   right: 0;
   z-index: 1000;
   
@@ -525,7 +526,8 @@
   transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
               opacity 0.3s ease, 
               transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(52, 211, 153, 0.05);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+
 }
 
 #menuDropdownContainer.active {
@@ -645,16 +647,16 @@
   
   <!-- User Identity Profiler Section -->
   <div class="flex flex-col items-center text-center border-b border-white/5 pb-4 mb-4">
-    <div class="w-12 h-12 rounded-full bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-center text-lg font-bold text-emerald-400 mb-2 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
-      G
+    <!-- Dynamic Letter Circle Avatar -->
+    <div id="sidebarAvatarLetter" class="w-12 h-12 rounded-full bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-center text-lg font-bold text-emerald-400 mb-2 shadow-[0_0_15px_rgba(52,211,153,0.1)] uppercase">
+      -
     </div>
-    <h4 class="text-sm font-bold text-white tracking-tight" id="sidebarUsername">Jayant</h4>
-    <p class="text-[11px] text-zinc-500 font-mono mt-0.5" id="sidebarUserTag">@jayant.dev</p>
+    <h4 class="text-sm font-bold text-white tracking-tight" id="sidebarUsername">Loading...</h4>
     
     <!-- User ID Snippet Block -->
     <div class="mt-3 px-2.5 py-1 bg-zinc-900/60 border border-white/5 rounded-lg flex items-center gap-2 text-[10px] font-mono text-zinc-400">
       <span>User ID:</span>
-      <span class="text-zinc-300 select-all" id="sidebarUidText">GRID-7F3A</span>
+      <span class="text-zinc-300 select-all uppercase" id="sidebarUidText">GRID-7F3A</span>
       <button class="text-zinc-500 hover:text-emerald-400 transition-colors" id="copyUidBtn" title="Copy UID">
         <i class="ti ti-copy"></i>
       </button>
@@ -664,8 +666,8 @@
   <!-- Main Navigation Link Items List Stack -->
   <div class="space-y-3 mb-4">
     
-    <!-- Custom Framed Premium DSA Link Item -->
-    <a href="/dsa" class="sidebar-dsa-card flex items-center justify-between group decoration-none">
+    <!-- Custom Framed Premium DSA Link Item targeting dsa.html -->
+    <a href="dsa.html" class="sidebar-dsa-card flex items-center justify-between group decoration-none">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/20 transition-all">
           <i class="ti ti-trending-up text-base"></i>
@@ -971,15 +973,18 @@ const menuDropdown = document.getElementById('menuDropdownContainer');
 const hamburgerBtn = document.getElementById('hamburgerMenuBtn');
 const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
 const copyUidBtn = document.getElementById('copyUidBtn');
-
 function toggleDropdownMenu() {
   const isOpen = menuDropdown.classList.contains('active');
   
   if (!isOpen) {
-    // Safely pulls active profile information within module context boundaries
-    document.getElementById('sidebarUsername').textContent = currentUserProfile.username || "Gridline User";
-    document.getElementById('sidebarUserTag').textContent = `@${(normalizedId || 'user')}`;
-    document.getElementById('sidebarUidText').textContent = `GRID-${normalizedId.toUpperCase().slice(0, 8)}`;
+    // Extract dynamic workspace identities
+    const finalUsername = currentUserProfile.username && currentUserProfile.username !== "..." ? currentUserProfile.username : (normalizedId || "User");
+    const safeInitialLetter = finalUsername.trim().charAt(0).toUpperCase();
+    
+    // Inject current session dynamic details on open
+    document.getElementById('sidebarUsername').textContent = finalUsername;
+    document.getElementById('sidebarAvatarLetter').textContent = safeInitialLetter;
+    document.getElementById('sidebarUidText').textContent = normalizedId ? normalizedId.toUpperCase() : "GRID-USER";
     
     menuDropdown.classList.add('active');
     hamburgerBtn.classList.add('open-state');
