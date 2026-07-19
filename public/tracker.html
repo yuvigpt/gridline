@@ -77,14 +77,13 @@
       display: none; /* Hide scrollbar completely */
     }
 
-  /* Aurora Background */
+    /* Aurora Background */
     .bg-mesh {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background-image: url('bkg5gpt.png');
       background-size: cover;
       background-position: center;
-      background-attachment: fixed; /* Locks the texture image in place globally */
       z-index: -2;
     }
 
@@ -1718,8 +1717,6 @@ initializeCloudSync();
         rootWrap.style.width = '100%';
         rootWrap.style.overflow = 'hidden';
       }
-      // FREEZE BODY SCROLLING NATIVELY WITHOUT SHIFTING THE LAYOUT
-      document.body.style.overflow = 'hidden';
       
       overlay.classList.remove('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
       overlay.classList.add('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
@@ -1744,8 +1741,13 @@ initializeCloudSync();
     }
 
     function closeDrawer() {
-      // RESTORE BODY SCROLLING SAFELY
-      document.body.style.overflow = '';
+      // FIXED: Release background shell positions back safely
+      const rootWrap = document.getElementById('mainContentWrap');
+      if(rootWrap) {
+        rootWrap.style.position = '';
+        rootWrap.style.width = '';
+        rootWrap.style.overflow = '';
+      }
       
       overlay.classList.add('bg-black/0', 'backdrop-blur-none', 'pointer-events-none');
       overlay.classList.remove('bg-black/60', 'backdrop-blur-md', 'pointer-events-auto');
@@ -1759,7 +1761,6 @@ initializeCloudSync();
       closeYesterdayPanel();
       closeModal();
     }
-      
 
     function openModal(taskId = null) {
       editingTaskId = taskId;
