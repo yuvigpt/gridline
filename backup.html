@@ -499,95 +499,6 @@
       transition: opacity 0.2s;
     }
     tr:hover .row-del { opacity: 1; }
-
-
-    /* Vertical Dropdown Navigation Menu Wrapper */
-#menuDropdownContainer {
-  width: 100%;
-  max-width: 340px; /* Clamps width cleanly */
-  background: rgba(9, 14, 11, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  position: absolute;
-  top: calc(100% + 12px); /* Spaced cleanly right below nav bar */
-  right: 0;
-  z-index: 1000;
-  
-  /* Vertical Slide & Collapse Engine */
-  opacity: 0;
-  transform: translateY(-10px) scaleY(0.95);
-  transform-origin: top right;
-  pointer-events: none;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
-              opacity 0.3s ease, 
-              transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(52, 211, 153, 0.05);
-}
-
-#menuDropdownContainer.active {
-  opacity: 1;
-  max-height: 600px; /* Safe upper bound allowance */
-  transform: translateY(0) scaleY(1);
-  pointer-events: auto;
-}
-
-/* Custom Hamburger Animation States */
-.hamburger-btn {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 18px;
-  height: 12px;
-  cursor: pointer;
-}
-.hamburger-btn span {
-  width: 100%;
-  height: 2px;
-  background-color: #ffffff;
-  border-radius: 2px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-#hamburgerMenuBtn.open-state span:nth-child(1) {
-  transform: translateY(5px) rotate(45deg);
-}
-#hamburgerMenuBtn.open-state span:nth-child(2) {
-  opacity: 0;
-}
-#hamburgerMenuBtn.open-state span:nth-child(3) {
-  transform: translateY(-5px) rotate(-45deg);
-}
-
-/* Dropdown Content Row Links styling */
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  color: #9db8ab;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  font-size: 13px;
-}
-.sidebar-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.sidebar-dsa-card {
-  background: rgba(52, 211, 153, 0.03);
-  border: 1px solid rgba(52, 211, 153, 0.15);
-  border-radius: 14px;
-  padding: 12px 14px;
-  transition: all 0.3s ease;
-}
-.sidebar-dsa-card:hover {
-  border-color: rgba(52, 211, 153, 0.4);
-  background: rgba(52, 211, 153, 0.06);
-}
   </style>
 </head>
 <body class="skeleton-loading">
@@ -631,89 +542,6 @@
     <a href="#" id="todo-drawer-trigger" class="nav-item ml-4">
   <i class="ti ti-list-check"></i> TO-DO LIST
 </a>
-<!-- Trigger Action Button -->
-<button class="nav-btn ml-2 relative" id="hamburgerMenuBtn" title="Toggle Menu">
-  <div class="hamburger-btn">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</button>
-
-<!-- Dropdown Menu Box Component -->
-<div id="menuDropdownContainer" class="p-5 font-sans text-white text-left">
-  
-  <!-- User Identity Profiler Section -->
-  <div class="flex flex-col items-center text-center border-b border-white/5 pb-4 mb-4">
-    <div class="w-12 h-12 rounded-full bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-center text-lg font-bold text-emerald-400 mb-2 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
-      G
-    </div>
-    <h4 class="text-sm font-bold text-white tracking-tight" id="sidebarUsername">Jayant</h4>
-    <p class="text-[11px] text-zinc-500 font-mono mt-0.5" id="sidebarUserTag">@jayant.dev</p>
-    
-    <!-- User ID Snippet Block -->
-    <div class="mt-3 px-2.5 py-1 bg-zinc-900/60 border border-white/5 rounded-lg flex items-center gap-2 text-[10px] font-mono text-zinc-400">
-      <span>User ID:</span>
-      <span class="text-zinc-300 select-all" id="sidebarUidText">GRID-7F3A</span>
-      <button class="text-zinc-500 hover:text-emerald-400 transition-colors" id="copyUidBtn" title="Copy UID">
-        <i class="ti ti-copy"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Main Navigation Link Items List Stack -->
-  <div class="space-y-3 mb-4">
-    
-    <!-- Custom Framed Premium DSA Link Item -->
-    <a href="/dsa" class="sidebar-dsa-card flex items-center justify-between group decoration-none">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/20 transition-all">
-          <i class="ti ti-trending-up text-base"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-xs font-bold text-emerald-400 tracking-tight">DSA Tracker</span>
-        </div>
-      </div>
-      <i class="ti ti-chevron-right text-zinc-500 group-hover:text-emerald-400 transition-colors text-xs"></i>
-    </a>
-
-    <!-- Remaining App Navigation Routes -->
-    <div class="space-y-0.5">
-      <a href="#" class="sidebar-link group">
-        <div class="flex items-center gap-2.5">
-          <i class="ti ti-trophy text-base"></i><span>Achievements</span>
-        </div>
-        <i class="ti ti-chevron-right text-zinc-600 group-hover:text-zinc-400 text-xs"></i>
-      </a>
-      <a href="#" class="sidebar-link group">
-        <div class="flex items-center gap-2.5">
-          <i class="ti ti-settings text-base"></i><span>Settings</span>
-        </div>
-        <i class="ti ti-chevron-right text-zinc-600 group-hover:text-zinc-400 text-xs"></i>
-      </a>
-      <a href="#" class="sidebar-link group">
-        <div class="flex items-center gap-2.5">
-          <i class="ti ti-help text-base"></i><span>Help & Support</span>
-        </div>
-        <i class="ti ti-chevron-right text-zinc-600 group-hover:text-zinc-400 text-xs"></i>
-      </a>
-      <a href="#" class="sidebar-link group">
-        <div class="flex items-center gap-2.5">
-          <i class="ti ti-message-2 text-base"></i><span>Feedback</span>
-        </div>
-        <i class="ti ti-chevron-right text-zinc-600 group-hover:text-zinc-400 text-xs"></i>
-      </a>
-    </div>
-  </div>
-
-  <!-- Logout Footer Layout Component Row -->
-  <div class="border-t border-white/5 pt-3">
-    <button id="sidebarLogoutBtn" class="w-full flex items-center justify-center gap-2 py-2.5 bg-red-950/20 border border-red-900/30 text-red-400 hover:text-red-300 hover:bg-red-950/40 font-bold text-[11px] rounded-lg uppercase tracking-wider transition-all active:scale-[0.98]">
-      <i class="ti ti-logout text-xs"></i>
-      <span>Logout Session</span>
-    </button>
-  </div>
-</div>
     
   
   </nav>
@@ -965,63 +793,6 @@ updateWelcomeHeader(currentUserProfile.username);
   let barChart, donutChart;
   
   let currentStats = { goal: 0, actual: 0, left: 0, streak: 0, pct: 0 };
-
-  // --- VERTICAL DROPDOWN TOGGLE LOGIC ENGINE ---
-const menuDropdown = document.getElementById('menuDropdownContainer');
-const hamburgerBtn = document.getElementById('hamburgerMenuBtn');
-const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
-const copyUidBtn = document.getElementById('copyUidBtn');
-
-function toggleDropdownMenu() {
-  const isOpen = menuDropdown.classList.contains('active');
-  
-  if (!isOpen) {
-    // Safely pulls active profile information within module context boundaries
-    document.getElementById('sidebarUsername').textContent = currentUserProfile.username || "Gridline User";
-    document.getElementById('sidebarUserTag').textContent = `@${(normalizedId || 'user')}`;
-    document.getElementById('sidebarUidText').textContent = `GRID-${normalizedId.toUpperCase().slice(0, 8)}`;
-    
-    menuDropdown.classList.add('active');
-    hamburgerBtn.classList.add('open-state');
-  } else {
-    closeDropdownMenu();
-  }
-}
-
-function closeDropdownMenu() {
-  menuDropdown.classList.remove('active');
-  hamburgerBtn.classList.remove('open-state');
-}
-
-// Event Listener Bindings
-hamburgerBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  toggleDropdownMenu();
-});
-
-// Tap background area outside dropdown perimeter to dim and collapse pane
-document.addEventListener('click', (e) => {
-  if (!menuDropdown.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-    closeDropdownMenu();
-  }
-});
-
-// Copy unique token identifier reference to global system clipboard
-copyUidBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const uidText = document.getElementById('sidebarUidText').textContent;
-  navigator.clipboard.writeText(uidText).then(() => {
-    const origInner = copyUidBtn.innerHTML;
-    copyUidBtn.innerHTML = '<i class="ti ti-check text-emerald-400"></i>';
-    setTimeout(() => { copyUidBtn.innerHTML = origInner; }, 2000);
-  });
-});
-
-// Dynamic clear and reset engine session callback handler
-sidebarLogoutBtn.addEventListener('click', () => {
-  localStorage.removeItem("habit_current_user");
-  window.location.href = "/";
-});
 
   const dateKey = (y,m,d) => `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
   const daysInMonth = (y,m) => new Date(y,m+1,0).getDate();
@@ -1383,8 +1154,19 @@ if (profileSnapshot.exists()) {
   });
 }
 
+// Trigger database sync initialization routine
+initializeCloudSync();
 
- 
+  // --- LOGOUT AGENT ---
+  const logoutBtn = document.createElement('button');
+  logoutBtn.className = 'nav-btn ml-2';
+  logoutBtn.title = 'Logout from session';
+  logoutBtn.innerHTML = '<i class="ti ti-logout"></i>';
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem("habit_current_user");
+    window.location.href = "/";
+  });
+  document.getElementById('mainNav').appendChild(logoutBtn);
 </script>
 <script>
   if ('serviceWorker' in navigator) {
@@ -1981,7 +1763,6 @@ if (profileSnapshot.exists()) {
     }, 30000);
 
   })();
-  
 </script>
 </body>
 </html>
