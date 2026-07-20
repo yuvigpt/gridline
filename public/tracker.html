@@ -512,8 +512,8 @@
   
   border-radius: 20px;
   position: absolute;
-  top: calc(100% + 12px); 
-  right: 0;
+  top: calc(100% + 16px) !important; 
+  right: -20px !important;
   z-index: 1000;
   
   /* Vertical Slide & Collapse Engine */
@@ -664,7 +664,7 @@
   </div>
 
   <!-- Main Navigation Link Items List Stack -->
-  <div class="space-y-3 mb-4">
+  <div class="space-y-4 mb-4 mt-2">
     
     <!-- Custom Framed Premium DSA Link Item targeting dsa.html -->
     <a href="dsa.html" class="sidebar-dsa-card flex items-center justify-between group decoration-none">
@@ -708,13 +708,12 @@
     </div>
   </div>
 
-  <!-- Logout Footer Layout Component Row -->
-  <div class="border-t border-white/5 pt-3">
-    <button id="sidebarLogoutBtn" class="w-full flex items-center justify-center gap-2 py-2.5 bg-red-950/20 border border-red-900/30 text-red-400 hover:text-red-300 hover:bg-red-950/40 font-bold text-[11px] rounded-lg uppercase tracking-wider transition-all active:scale-[0.98]">
-      <i class="ti ti-logout text-xs"></i>
-      <span>Logout Session</span>
-    </button>
-  </div>
+ <!-- Logout Footer Layout Component Row -->
+<div class="border-t border-white/5 pt-4 px-1">
+  <button id="sidebarLogoutBtn" class="w-full flex items-center justify-center gap-2 py-3 bg-red-950/20 border border-red-900/20 text-red-400 hover:text-red-300 hover:bg-red-950/40 hover:border-red-500/40 font-bold text-[10px] rounded-xl uppercase tracking-wider transition-all active:scale-[0.98]">
+    <i class="ti ti-logout text-xs"></i>
+    <span>Logout Session</span>
+  </button>
 </div>
     
   
