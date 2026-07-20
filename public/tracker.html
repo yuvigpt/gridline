@@ -1465,7 +1465,7 @@ initializeCloudSync();
       <!-- Top Row: Input -->
       <div class="flex items-center gap-2 bg-black border border-zinc-900 rounded-xl px-4 py-3 focus-within:border-emerald-500/50 transition-all">
         <span class="text-emerald-400 text-sm font-mono font-bold">&gt;</span>
-        <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-base font-bold text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-700">
+        <input id="todoTaskInput" type="text" placeholder="ENTER YOUR TASK..." class="bg-transparent border-none text-base font-bold text-white outline-none w-full font-mono uppercase tracking-wide placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/30 transition-all duration-300">
       </div>
 
       <!-- Bottom Row: Actions -->
@@ -1600,6 +1600,7 @@ initializeCloudSync();
     const yesterdayListContainer = document.getElementById('yesterdayList');
     const progressText = document.getElementById('todoProgressText');
     const progressBar = document.getElementById('todoProgressBar');
+    progressBar.style.transition = "width .5s cubic-bezier(.22,1,.36,1)";
     
     const dateLabel = document.getElementById('todoDateLabel');
     const weekdayLabel = document.getElementById('todoWeekdayLabel');
@@ -1863,7 +1864,16 @@ initializeCloudSync();
       const yList = tasksByDate[yesterdayKey] || [];
 
       const completed = tList.filter(t => t.completed).length;
-      progressText.textContent = `${completed} of ${tList.length} completed`;
+      const percent =
+tList.length
+?
+Math.round((completed/tList.length)*100)
+:
+0;
+
+progressText.textContent =
+`${percent}% • ${completed}/${tList.length} Tasks`;
+      
       progressBar.style.width = tList.length ? `${(completed / tList.length) * 100}%` : '0%';
 
       buildHTMLStack(tList, todayListContainer, todayKey, true);
@@ -1882,20 +1892,85 @@ initializeCloudSync();
       });
 
       if (!sorted.length) {
-        container.innerHTML = `<div class="text-center text-xs font-mono text-zinc-700 py-12 border border-dashed border-zinc-900 rounded-2xl">[ No tasks logged ]</div>`;
+        container.innerHTML = `<div class="text-center text-xs font-mono text-zinc-700 py-12 border border-dashed border-zinc-900 rounded-2xl"><div class="py-12 flex flex-col items-center gap-3">
+
+<div class="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center">
+
+<i class="ti ti-list-check text-3xl text-emerald-400"></i>
+
+</div>
+
+<p class="text-zinc-400 font-semibold">
+
+Nothing planned today
+
+</p>
+
+<p class="text-xs text-zinc-600">
+
+Add your first task and build momentum.
+
+</p>
+
+</div></div>`;
         return;
       }
 
       sorted.forEach(task => {
         const item = document.createElement('div');
-        item.className = "flex flex-col w-full bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden transition-all duration-200 mb-2 hover:border-zinc-800 relative";
+        item.style.opacity = "0";
+item.style.transform = "translateY(12px)";
+item.style.transition = "all .35s cubic-bezier(.22,1,.36,1)";
+
+setTimeout(() => {
+    item.style.opacity = "1";
+    item.style.transform = "translateY(0)";
+}, 50 * sorted.indexOf(task));
+        item.className = `
+flex flex-col w-full
+bg-zinc-950/95
+border border-zinc-900
+rounded-2xl
+overflow-hidden
+transition-all
+duration-300
+ease-out
+mb-2
+hover:border-emerald-500/40
+hover:-translate-y-1
+hover:shadow-[0_0_18px_rgba(16,185,129,0.12)]
+relative`;
         
         item.innerHTML = `
           <div class="flex items-center gap-3 px-4 py-3 group">
-            <button class="todo-check-btn w-5 h-5 rounded border-2 transition-all flex items-center justify-center shrink-0 ${task.completed ? 'bg-emerald-400 border-emerald-400 text-black' : 'border-zinc-700 hover:border-zinc-500'}">
+            <button class="
+todo-check-btn
+w-6
+h-6
+rounded-lg
+border-2
+transition-all
+duration-300
+flex
+items-center
+justify-center
+shrink-0
+hover:scale-110
+active:scale-95 ${task.completed ? 'bg-emerald-400 border-emerald-400 text-black' : 'border-zinc-700 hover:border-zinc-500'}">
               ${task.completed ? '<i class="ti ti-check font-bold text-xs"></i>' : ''}
             </button>
-            <span class="text-sm flex-1 truncate ${task.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}">${task.text}</span>
+            <span class="
+text-sm
+flex-1
+truncate
+transition-all
+duration-300
+${task.completed
+?
+'line-through text-zinc-600 opacity-60 translate-x-1'
+:
+'text-zinc-300'}
+">${task.text}</span>
             
             ${allowTimeEdits ? `
               <button class="todo-inline-modal-trigger flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg border transition-all ${task.time ? 'text-zinc-400 border-zinc-800 hover:text-emerald-400 hover:border-emerald-500/20 bg-black' : 'text-zinc-600 border-dashed border-zinc-900 hover:text-zinc-300 bg-transparent'}">
@@ -1906,7 +1981,7 @@ initializeCloudSync();
               <span class="flex items-center gap-1 text-xs text-zinc-600 font-mono shrink-0"><i class="ti ti-clock"></i> ${formatTime12h(task.time)}</span>
             ` : '')}
 
-            <button class="todo-del-btn text-zinc-800 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 shrink-0">
+            <button class="todo-del-btn text-zinc-800 hover:text-red-400 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 transition-opacity p-0.5 shrink-0">
               <i class="ti ti-trash text-sm"></i>
             </button>
           </div>
@@ -1932,6 +2007,9 @@ initializeCloudSync();
         }
 
         container.appendChild(item);
+        requestAnimationFrame(() => {
+    item.classList.add("opacity-100");
+});
       });
     }
 
